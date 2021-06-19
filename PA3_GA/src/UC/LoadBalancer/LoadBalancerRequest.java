@@ -60,7 +60,7 @@ public class LoadBalancerRequest extends Thread {
             //Split Servers
             String[] arrOfStr = infoFromMonitor.split("[|]", -2);
 
-            //Case if the server Crashs Flag, if its a normal NEW request(9999999) then the next code should select the best server
+           //o que o thread deve fazer para escolher o server a quem mandar request
             if (SERVERIDINCASECRASH == 9999999) {
                 for (String arrOfStr1 : arrOfStr) {
                     String[] arrOfStrData = arrOfStr1.split(";", -2);

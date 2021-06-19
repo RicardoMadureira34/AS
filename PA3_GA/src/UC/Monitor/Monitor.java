@@ -215,12 +215,6 @@ public class Monitor extends javax.swing.JFrame {
                 try {
                     dataOutputStream.writeUTF(request);
                     dataOutputStream.flush();
-                    
-                    
-                    String str = dataInputStream.readUTF();
-                    
-                    
-                    String[] array_for_srt = str.split(";", -2);
 
                 } catch (IOException e) {
                 }
@@ -289,7 +283,7 @@ public class Monitor extends javax.swing.JFrame {
                     String[] enviar_forserver = str.split(";", -2);
                     
                    
-                    if ("ImAliveMonitor".equals(enviar_forserver[0])) { //monitor comunica com o servidor
+                    if ("Monitorvivo".equals(enviar_forserver[0])) { //monitor comunica com o servidor
 //                        System.out.println("servidor vivo!" + arrOfStr[1]);
                         dataOutputStream.writeUTF("MonitorAc");
                         servers_conectados.put(parseInt(enviar_forserver[1]), connectedSocket);

@@ -271,7 +271,7 @@ public class Server extends javax.swing.JFrame {
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
 
                 String request = "Servidorvivo";
-                System.out.println("Sending Servidorvivo to LoadBalancer");
+                System.out.println("Sending Servidorvivo para LoadBalancer");
 
                 try {
                     dataOutputStream.writeUTF(request);
@@ -279,10 +279,6 @@ public class Server extends javax.swing.JFrame {
                     String str = dataInputStream.readUTF();
                     String[] arrOfStr = str.split(";", -2);
                     if (!arrOfStr[1].equals("Server")) {
-                        System.out.println("MISTAKE-CLIENT PORT");
-                        STATUSLabel.setForeground(Color.red);
-                        STATUSLabel.setText("Error/Dont pick Client Port");
-                        STATUSLabel.setVisible(true);
                         connectedSocket = null;
                         return false;
                     }
@@ -294,20 +290,36 @@ public class Server extends javax.swing.JFrame {
                 while (true) {
                     String requestInfo = dataInputStream.readUTF();
                     requeste_iniciais.add(requestInfo);
-                    updateGui();
+                    //ATULIZAR A GUI
+                    StringBuilder newTextArea = new StringBuilder();
+                for (int i = 0; i < requeste_iniciais.size(); i++) {
+                    newTextArea.append("Request-")
+                            .append(requeste_iniciais.get(i))
+                            .append("\n");
+                }
+                Requeste_recebidos_swing.setText(newTextArea.toString());
+                cont_req_recebidos_swing.setText(String.valueOf(requeste_iniciais.size()));
+ 
+                    
                     if (controlar_request.size() < 3) {
                         //Process Request
                         contar_request++;
                         controlar_request.put(contar_request, requestInfo);
-                        updateNumbersGui();
+                        //ATUALIZAR GUI
+                        queue_sizeswing.setText(String.valueOf(queue.size()));
+                        controlar_reqswing.setText(String.valueOf(controlar_request.size()));
+                 
                         ServerRequest serverRequest = new ServerRequest(requestInfo, portId_server, controlar_request, contar_request, enviar_LB, 0, id, requeste_executado_swing, request_executados, cont_reqexecutados_swing);
                         serverRequest.start();
                     } else if (queue.size() < 2) {
                         //Queue
                         queue.add(requestInfo);
-                        updateNumbersGui();
+                        //ATUALIZAR GUI
+                        queue_sizeswing.setText(String.valueOf(queue.size()));
+                        controlar_reqswing.setText(String.valueOf(controlar_request.size()));
+                        
                     } else {
-                        //Rejected
+                        //Vamos rejeitar
                         String[] val = requestInfo.split("[|]", 0);
                         System.out.println(val.length);
                         String rejectedRequest = val[0] + "|" + val[1] + "|" + String.valueOf(0) + id + "|" + String.valueOf(0) + String.valueOf(3) + "|" + val[4] + "|" + val[5] + "|";
@@ -321,21 +333,10 @@ public class Server extends javax.swing.JFrame {
                         } catch (IOException ex) {
                             Logger.getLogger(ServerRequest.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        System.out.println("SERVER_REQUEST_ENVIADO_REJECTED " + rejectedRequest);
                     }
                 }
             }
 
-            public void updateGui() {
-                StringBuilder newTextArea = new StringBuilder();
-                for (int i = 0; i < requeste_iniciais.size(); i++) {
-                    newTextArea.append("Request-")
-                            .append(requeste_iniciais.get(i))
-                            .append("\n");
-                }
-                Requeste_recebidos_swing.setText(newTextArea.toString());
-                cont_req_recebidos_swing.setText(String.valueOf(requeste_iniciais.size()));
-            }
         };
         Logic_server.execute();
 
@@ -375,7 +376,7 @@ public class Server extends javax.swing.JFrame {
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
 
-                String request = "ImAliveMonitor";
+                String request = "Monitorvivo";
 
                 try {
                     while (true) {
@@ -389,17 +390,13 @@ public class Server extends javax.swing.JFrame {
                     String str = dataInputStream.readUTF();
                     System.out.println(str + monitorPortId);
                     if (!"MonitorAc".equals(str)) {
-                        System.out.println("MISTAKE-CLIENT-SERVER PORT");
-                        STATUSLabel.setForeground(Color.red);
-                        STATUSLabel.setText("Error/Dont pick Client Port");
-                        STATUSLabel.setVisible(true);
                         connectedSocket = null;
                         return false;
                     }
                 } catch (IOException e) {
                 }
                 while (true) {
-                    //Sending Response to hearbeat
+                    //Sending Response to Monitor
                     String requestInfo = dataInputStream.readUTF();
                     StringBuilder sendInfoToMonitor = new StringBuilder();
                     controlar_request.keySet().forEach(key -> {
@@ -420,14 +417,20 @@ public class Server extends javax.swing.JFrame {
             @Override
             protected Boolean doInBackground() throws Exception {
                 while (true) {
-                    updateNumbersGui();
+                    //ATUALIZAR GUI
+                    queue_sizeswing.setText(String.valueOf(queue.size()));
+                    controlar_reqswing.setText(String.valueOf(controlar_request.size()));
+                    
                     if (controlar_request.size() < 3 && queue.size() > 0) {
                         contar_request++;
                         ServerRequest serverRequest = new ServerRequest(queue.get(0), portId_server, controlar_request, contar_request, enviar_LB, 0, id, requeste_executado_swing, request_executados, cont_reqexecutados_swing);
                         serverRequest.start();
                         controlar_request.put(contar_request, queue.get(0));
                         queue.remove(0);
-                        updateNumbersGui();
+                        
+                        //ATUALIZAR GUI
+                        queue_sizeswing.setText(String.valueOf(queue.size()));
+                        controlar_reqswing.setText(String.valueOf(controlar_request.size()));
                     }
                 }
             }
@@ -435,10 +438,6 @@ public class Server extends javax.swing.JFrame {
         Logic_dist_req.execute();
     }//GEN-LAST:event_startButtonActionPerformed
 
-    public void updateNumbersGui() {
-        queue_sizeswing.setText(String.valueOf(queue.size()));
-        controlar_reqswing.setText(String.valueOf(controlar_request.size()));
-    }
 
     /**
      * @param args the command line arguments

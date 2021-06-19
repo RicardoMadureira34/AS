@@ -95,15 +95,8 @@ public class ServerRequest extends Thread {
             dataOutputStream.flush();
             System.out.println("SERVER_REQUEST_ENVIADO " + r.toString());
             request_executados.add(r.toString());
-            updateGui();
-            controlar_request.remove(position_request);
-        } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(ServerRequest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void updateGui() {
-        StringBuilder newTextArea = new StringBuilder();
+            //ATUALIZAR GUI
+            StringBuilder newTextArea = new StringBuilder();
         for (int i = 0; i < request_executados.size(); i++) {
             newTextArea.append("Request-")
                     .append(request_executados.get(i))
@@ -111,5 +104,11 @@ public class ServerRequest extends Thread {
         }
         requeste_executado_swing.setText(newTextArea.toString());
         cont_reqexecutados_swing.setText(String.valueOf(request_executados.size()));
+            
+            controlar_request.remove(position_request);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(ServerRequest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
 }
