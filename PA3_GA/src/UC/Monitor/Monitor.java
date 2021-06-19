@@ -27,7 +27,7 @@ public class Monitor extends javax.swing.JFrame {
 
     public Monitor() throws IOException {
         initComponents();
-        CONNECTIONREADYLabel.setVisible(false);
+        online_swing.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,7 +37,7 @@ public class Monitor extends javax.swing.JFrame {
         startButton = new javax.swing.JButton();
         Label = new javax.swing.JLabel();
         Port_Load = new javax.swing.JTextField();
-        CONNECTIONREADYLabel = new javax.swing.JLabel();
+        online_swing = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         Serveronline_swing = new javax.swing.JTextArea();
         TEXTFIELDMONITORS = new javax.swing.JTextField();
@@ -63,9 +63,9 @@ public class Monitor extends javax.swing.JFrame {
         Port_Load.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         Port_Load.setText("6666");
 
-        CONNECTIONREADYLabel.setFont(new java.awt.Font("Arial Black", 0, 12)); // NOI18N
-        CONNECTIONREADYLabel.setForeground(new java.awt.Color(0, 100, 0));
-        CONNECTIONREADYLabel.setText("ONLINE!");
+        online_swing.setFont(new java.awt.Font("Arial Black", 0, 12)); // NOI18N
+        online_swing.setForeground(new java.awt.Color(0, 100, 0));
+        online_swing.setText("ONLINE!");
 
         Serveronline_swing.setColumns(20);
         Serveronline_swing.setRows(5);
@@ -123,7 +123,7 @@ public class Monitor extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(TEXTFIELDMONITORS, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(CONNECTIONREADYLabel)
+                        .addComponent(online_swing)
                         .addGap(52, 52, 52))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -139,7 +139,7 @@ public class Monitor extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(11, 11, 11)
-                        .addComponent(CONNECTIONREADYLabel)
+                        .addComponent(online_swing)
                         .addGap(29, 29, 29))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
@@ -187,9 +187,9 @@ public class Monitor extends javax.swing.JFrame {
                 } catch (IOException ex) {
                     Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                CONNECTIONREADYLabel.setForeground(new java.awt.Color(0, 100, 0));
-                CONNECTIONREADYLabel.setText("ONLINE!");
-                CONNECTIONREADYLabel.setVisible(true);
+                online_swing.setForeground(new java.awt.Color(0, 100, 0));
+                online_swing.setText("ONLINE!");
+                online_swing.setVisible(true);
                 connectedSocket = s;
 
                 // get the output stream from the socket.
@@ -242,7 +242,7 @@ public class Monitor extends javax.swing.JFrame {
         lb.start();
         
         //Thread to comunicate with Servers
-        SwingWorker worker2 = new SwingWorker<Boolean, Integer>() {
+        SwingWorker Logic_recived_fromservers = new SwingWorker<Boolean, Integer>() {
 
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -255,9 +255,9 @@ public class Monitor extends javax.swing.JFrame {
                     return false;
                 }
 
-                CONNECTIONREADYLabel.setForeground(new java.awt.Color(0, 100, 0));
-                CONNECTIONREADYLabel.setText("ONLINE!");
-                CONNECTIONREADYLabel.setVisible(true);
+                online_swing.setForeground(new java.awt.Color(0, 100, 0));
+                online_swing.setText("ONLINE!");
+                online_swing.setVisible(true);
 
                 while (true) {
                     Socket s2 = null;
@@ -298,7 +298,7 @@ public class Monitor extends javax.swing.JFrame {
                 }
             }
         };
-        worker2.execute();
+        Logic_recived_fromservers.execute();
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
@@ -341,7 +341,6 @@ public class Monitor extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CONNECTIONREADYLabel;
     private javax.swing.JLabel Label;
     private javax.swing.JTextField Port_Load;
     private javax.swing.JTextArea Serveronline_swing;
@@ -352,6 +351,7 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel online_swing;
     private javax.swing.JTextArea process_forserver_swing;
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables

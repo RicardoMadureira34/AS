@@ -45,7 +45,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel7" min="-2" pref="64" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="niter" min="-2" pref="41" max="-2" attributes="0"/>
+                              <Component id="niter_swing" min="-2" pref="41" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel1" alignment="0" min="-2" pref="179" max="-2" attributes="0"/>
                       </Group>
@@ -57,7 +57,7 @@
                       <Component id="Portfor_client" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="CONNECTIONREADYLabel" max="32767" attributes="0"/>
+                          <Component id="ONLINE_SWING" max="32767" attributes="0"/>
                           <Component id="StartBut" pref="104" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -88,7 +88,7 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="CONNECTIONREADYLabel" min="-2" max="-2" attributes="0"/>
+              <Component id="ONLINE_SWING" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="Id_Client" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -99,7 +99,7 @@
               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="niter" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="niter_swing" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="76" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -191,7 +191,7 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JTextField" name="niter">
+    <Component class="javax.swing.JTextField" name="niter_swing">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="14" style="0"/>
@@ -224,7 +224,7 @@
         <Property name="text" type="java.lang.String" value="ID_Cliente"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="CONNECTIONREADYLabel">
+    <Component class="javax.swing.JLabel" name="ONLINE_SWING">
       <Properties>
         <Property name="text" type="java.lang.String" value="jLabel2"/>
       </Properties>

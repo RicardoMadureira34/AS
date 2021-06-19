@@ -1,6 +1,6 @@
 package UC.Monitor;
 
-import UC.LoadBalancer.LoadBalancerRequest;
+import UC.LoadBalancer.ThreadLB_Request;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import javax.swing.JTextArea;
 public class ThreadMonitor extends Thread {
 
     private final HashMap<Integer, Socket> see_serveronline;
-    private final HashMap<Integer, Integer> numberOfWorkLoadEachThreadServer;
+    private final HashMap<Integer, Integer> trab_onEachThreadServer;
     private final Socket serverSocket;
     private final int Socket_lb_porta;
     private final int id;
@@ -27,13 +27,13 @@ public class ThreadMonitor extends Thread {
     HashMap<Integer, ArrayList> request_inservers;
 
     
-    public ThreadMonitor(Socket s2, HashMap<Integer, Socket> see_serveronline, int id, JTextArea server_online_swing, int Socket_lb_porta, HashMap<Integer, Integer> numberOfWorkLoadEachThreadServer, HashMap<Integer, ArrayList> request_inservers, JTextArea process_forserver) {
+    public ThreadMonitor(Socket s2, HashMap<Integer, Socket> see_serveronline, int id, JTextArea server_online_swing, int Socket_lb_porta, HashMap<Integer, Integer> trab_onEachThreadServer, HashMap<Integer, ArrayList> request_inservers, JTextArea process_forserver) {
         this.serverSocket = s2;
         this.Socket_lb_porta = Socket_lb_porta;
         this.id = id;
         this.see_serveronline = see_serveronline;
         this.server_online_swing = server_online_swing;
-        this.numberOfWorkLoadEachThreadServer = numberOfWorkLoadEachThreadServer;
+        this.trab_onEachThreadServer = trab_onEachThreadServer;
         this.request_inservers = request_inservers;
         this.process_forserver = process_forserver;
     }
@@ -65,15 +65,17 @@ public class ThreadMonitor extends Thread {
                 dataOutputStream.writeUTF("AreYouAlive?");
                 dataOutputStream.flush();
                 String str = dataInputStream.readUTF();
-                String[] arrOfStr = str.split(";", -2);
-                String[] requestsArrOfStr = arrOfStr[1].split(",", -2);
+                String[] array_receive_servers = str.split(";", -2);
+                String[] requests_array_receive_servers = array_receive_servers[1].split(",", -2);
 
                 ArrayList<String> temp = new ArrayList<>();
-                temp.addAll(Arrays.asList(requestsArrOfStr));
-                int flagRepetition = 0;
+                temp.addAll(Arrays.asList(requests_array_receive_servers));
+                
+                
+                int position = 0;
                 if (request_inservers.containsKey(id)) {
                     if (temp.equals(request_inservers.get(id))) {
-                        flagRepetition++;
+                        position++;
                     } else {
                         request_inservers.replace(id, temp);
                     }
@@ -81,36 +83,34 @@ public class ThreadMonitor extends Thread {
                     request_inservers.put(id, temp);
                 }
 
-                if (flagRepetition == 0) {
-                    StringBuilder newTextArea3 = new StringBuilder();
+                if (position == 0) {
+                    StringBuilder show_onswing = new StringBuilder();
                     request_inservers.keySet().stream().map(key -> {
-                        newTextArea3.append("Server ID:")
-                                .append(key)
-                                .append(" = ");
+                        show_onswing.append("Server ID:").append(key).append(" = ");
                         return key;
                     }).map(key -> {
                         for (int i = 0; i < request_inservers.get(key).size(); i++) {
-                            newTextArea3.append(request_inservers.get(key).get(i).toString())
+                            show_onswing.append(request_inservers.get(key).get(i).toString())
                                     .append("-");
                         }
                         return key;
                     }).forEachOrdered(_item -> {
-                        newTextArea3.append("\n");
+                        show_onswing.append("\n");
                     });
-                    process_forserver.setText(newTextArea3.toString());
+                    process_forserver.setText(show_onswing.toString());
                 }
 
-                if (!numberOfWorkLoadEachThreadServer.containsKey(id)) {
-                    numberOfWorkLoadEachThreadServer.put(id, parseInt(arrOfStr[0]));
+                if (!trab_onEachThreadServer.containsKey(id)) {
+                    trab_onEachThreadServer.put(id, parseInt(array_receive_servers[0]));
                 } else {
-                    numberOfWorkLoadEachThreadServer.replace(id, parseInt(arrOfStr[0]));
+                    trab_onEachThreadServer.replace(id, parseInt(array_receive_servers[0]));
                 }
             }
 
         } catch (IOException ex) {
             this.see_serveronline.remove(id);
             this.request_inservers.remove(id);
-            this.numberOfWorkLoadEachThreadServer.remove(id);
+            this.trab_onEachThreadServer.remove(id);
             StringBuilder newTextArea = new StringBuilder();
             see_serveronline.keySet().forEach(key -> {
                 newTextArea.append("Server ID:").append(key).append(" = ").append(see_serveronline.get(key)).append("\n");

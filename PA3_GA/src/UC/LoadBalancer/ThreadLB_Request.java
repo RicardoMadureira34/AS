@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LoadBalancerRequest extends Thread {
+public class ThreadLB_Request extends Thread {
 
     private Socket SOCKET_PORT;
     private final Socket socket_Monitor;
@@ -23,18 +23,7 @@ public class LoadBalancerRequest extends Thread {
     HashMap<Integer, Socket> allServersSocketsConnected;
     HashMap<Integer, ArrayList> allRequestsOnEachServer;
 
-    /**
-     * Constructor of Load Balancer Request
-     *
-     * @param requestStr - request string from client
-     * @param allServersSocketsConnected - hashmap of all sockets connected
-     * @param serverSocketMonitor - server port from monitor
-     * @param allClientsSocketsConnected - hashmap of all clients connected
-     * @param allRequestsOnEachServer - hashmap of all active requests on each
-     * server
-     * @param SERVERIDINCASECRASH - variable for checking if server dies
-     */
-    public LoadBalancerRequest(String request_cliente, HashMap<Integer, Socket> allServersSocketsConnected, Socket serverSocketMonitor, HashMap<Integer, Socket> allClientsSocketsConnected, HashMap<Integer, ArrayList> allRequestsOnEachServer, int SERVERIDINCASECRASH) {
+    public ThreadLB_Request(String request_cliente, HashMap<Integer, Socket> allServersSocketsConnected, Socket serverSocketMonitor, HashMap<Integer, Socket> allClientsSocketsConnected, HashMap<Integer, ArrayList> allRequestsOnEachServer, int SERVERIDINCASECRASH) {
         this.request_cliente = request_cliente;
         this.allServersSocketsConnected = allServersSocketsConnected;
         this.socket_Monitor = serverSocketMonitor;
@@ -94,7 +83,7 @@ public class LoadBalancerRequest extends Thread {
             try {
                 outputStream = this.allServersSocketsConnected.get(serverWithLowestWork).getOutputStream();
             } catch (IOException ex) {
-                Logger.getLogger(LoadBalancerRequest.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ThreadLB_Request.class.getName()).log(Level.SEVERE, null, ex);
             }
             //Enviar request para um server
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
@@ -102,7 +91,7 @@ public class LoadBalancerRequest extends Thread {
             dataOutputStream.flush();
             System.out.println("LOAD_BALANCER_REQUEST_ENVIADO->" + request_cliente + SOCKET_PORT);
         } catch (IOException ex) {
-            Logger.getLogger(LoadBalancerRequest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ThreadLB_Request.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

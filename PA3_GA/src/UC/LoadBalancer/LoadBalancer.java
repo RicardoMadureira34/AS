@@ -26,7 +26,7 @@ public class LoadBalancer extends javax.swing.JFrame {
     private Socket serverSocketMonitor;
     HashMap<Integer, Socket> allServerSocketsConnected = new HashMap<>();
     //HashTable so main LB thread can access all the threads that are waiting for requests of each server
-    HashMap<Integer, LoadBalancerRequestReceiver> allServerReceiverThreads = new HashMap<>();
+    HashMap<Integer, ThreadLB_ReceberRequest> allServerReceiverThreads = new HashMap<>();
     HashMap<Integer, Socket> all_clientessocket_conectados = new HashMap<>();
 
     //HashTable that contains all the requests on each server!
@@ -34,7 +34,7 @@ public class LoadBalancer extends javax.swing.JFrame {
 
     public LoadBalancer() throws IOException {
         initComponents();
-        STATUSLabel.setVisible(false);
+        
     }
 
     /**
@@ -61,7 +61,7 @@ public class LoadBalancer extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        STATUSLabel = new javax.swing.JLabel();
+        ONLINE_SWING = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LOAD_BALANCER");
@@ -155,7 +155,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                                         .addGap(160, 160, 160)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(Button_Connect, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                                    .addComponent(STATUSLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(ONLINE_SWING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(0, 59, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -186,7 +186,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                         .addGap(101, 101, 101)
                         .addComponent(Button_Connect)
                         .addGap(32, 32, 32)
-                        .addComponent(STATUSLabel)
+                        .addComponent(ONLINE_SWING, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -207,12 +207,14 @@ public class LoadBalancer extends javax.swing.JFrame {
             client_port = parseInt(Client_Port_Swing.getText());
             serverPortServer = parseInt(Servidor_Port_Swing.getText());
             PortMonitor = parseInt(Monitor_Port_Swing.getText());
-            
-        SwingWorker worker = new SwingWorker<Boolean, Integer>() {
+         
+            //SERVIDOR
+        SwingWorker Receive_from_server = new SwingWorker<Boolean, Integer>() {
             
             @Override
             protected Boolean doInBackground() throws Exception {
-                {
+                ONLINE_SWING.setVisible(false);
+                
                     ServerSocket serverSocket = null;
                     try {
                         serverSocket = new ServerSocket(serverPortServer);
@@ -251,7 +253,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                                 allServerSocketsConnected.put(numberOfServers, s2);
                                 allRequestsOnEachServer.put(numberOfServers, new ArrayList<String>());
                                 //Create a Thread that only reads replies from this Server!
-                                LoadBalancerRequestReceiver receiveRequests = new LoadBalancerRequestReceiver(all_clientessocket_conectados, s2, allRequestsOnEachServer);
+                                ThreadLB_ReceberRequest receiveRequests = new ThreadLB_ReceberRequest(all_clientessocket_conectados, s2, allRequestsOnEachServer);
                                 receiveRequests.start();
            
                                 StringBuilder newTextArea = new StringBuilder();
@@ -272,12 +274,12 @@ public class LoadBalancer extends javax.swing.JFrame {
                             }
                         }
                     }
-                }
+                
             }
 
 
         };
-        worker.execute();
+        Receive_from_server.execute();
 
         //CLIENT
         SwingWorker Logic_LoadClient = new SwingWorker<Boolean, Integer>() {
@@ -291,9 +293,9 @@ public class LoadBalancer extends javax.swing.JFrame {
                     } catch (IOException ex) {
                         Logger.getLogger(LoadBalancer.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    STATUSLabel.setForeground(new java.awt.Color(0, 100, 0));
-                    STATUSLabel.setText("ONLINE!");
-                    STATUSLabel.setVisible(true);
+                    ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
+                    ONLINE_SWING.setText("ONLINE!");
+                    ONLINE_SWING.setVisible(true);
                     while (true) {
                         Socket s2 = null;
                         try {
@@ -330,7 +332,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                                 numero_clientes++;
                                 numero_Clients_Swing.setText(String.valueOf(numero_clientes));
                             } else {
-                                LoadBalancerRequest loadBalancerRequest = new LoadBalancerRequest(str, allServerSocketsConnected, serverSocketMonitor, all_clientessocket_conectados, allRequestsOnEachServer, 9999999);
+                                ThreadLB_Request loadBalancerRequest = new ThreadLB_Request(str, allServerSocketsConnected, serverSocketMonitor, all_clientessocket_conectados, allRequestsOnEachServer, 9999999);
                                 loadBalancerRequest.start();
                             }
 
@@ -352,7 +354,7 @@ public class LoadBalancer extends javax.swing.JFrame {
         Logic_LoadClient.execute();
 
         //MONITOR
-        SwingWorker workerServer3 = new SwingWorker<Boolean, Integer>() {
+        SwingWorker Logic_Monitor = new SwingWorker<Boolean, Integer>() {
 
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -408,7 +410,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                 }
             }
         };
-        workerServer3.execute();
+        Logic_Monitor.execute();
     }//GEN-LAST:event_Button_ConnectActionPerformed
 
     private void Client_Port_SwingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Client_Port_SwingActionPerformed
@@ -462,7 +464,7 @@ public class LoadBalancer extends javax.swing.JFrame {
     private javax.swing.JTextArea Client_Connect_Swing;
     private javax.swing.JTextField Client_Port_Swing;
     private javax.swing.JTextField Monitor_Port_Swing;
-    private javax.swing.JLabel STATUSLabel;
+    private javax.swing.JLabel ONLINE_SWING;
     private javax.swing.JTextField Servidor_Port_Swing;
     private javax.swing.JTextArea Servidores_connect_Swing;
     private javax.swing.JLabel jLabel1;

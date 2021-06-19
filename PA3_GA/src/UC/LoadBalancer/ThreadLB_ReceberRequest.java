@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class LoadBalancerRequestReceiver extends Thread {
+public class ThreadLB_ReceberRequest extends Thread {
 
     private final HashMap<Integer, Socket> socket_client_connected;
     private final HashMap<Integer, ArrayList> request_fromserver;
@@ -20,7 +20,7 @@ public class LoadBalancerRequestReceiver extends Thread {
     private String str;
     
 
-    public LoadBalancerRequestReceiver(HashMap<Integer, Socket> socket_client_connected, Socket so, HashMap<Integer, ArrayList> request_fromserver) {
+    public ThreadLB_ReceberRequest(HashMap<Integer, Socket> socket_client_connected, Socket so, HashMap<Integer, ArrayList> request_fromserver) {
         this.socket_client_connected = socket_client_connected;
         this.so = so;
         this.request_fromserver = request_fromserver;
@@ -36,7 +36,7 @@ public class LoadBalancerRequestReceiver extends Thread {
                 DataInputStream dataInputStream = new DataInputStream(so.getInputStream());
                 str = dataInputStream.readUTF();
             } catch (IOException ex) {
-                Logger.getLogger(LoadBalancerRequestReceiver.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ThreadLB_ReceberRequest.class.getName()).log(Level.SEVERE, null, ex);
             }
         String[] process_str = str.split("[|]", -2);
 
@@ -45,13 +45,13 @@ public class LoadBalancerRequestReceiver extends Thread {
             try {
                 outputStreamClient = socket_client_connected.get(parseInt(process_str[0])).getOutputStream();
             } catch (IOException ex) {
-                Logger.getLogger(LoadBalancerRequestReceiver.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ThreadLB_ReceberRequest.class.getName()).log(Level.SEVERE, null, ex);
             }
             DataOutputStream dataOutputStreamClient = new DataOutputStream(outputStreamClient);
             try {
                 dataOutputStreamClient.writeUTF(str);
             } catch (IOException ex) {
-                Logger.getLogger(LoadBalancerRequestReceiver.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ThreadLB_ReceberRequest.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

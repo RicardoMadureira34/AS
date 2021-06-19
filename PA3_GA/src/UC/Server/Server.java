@@ -30,7 +30,7 @@ public class Server extends javax.swing.JFrame {
     public Server() throws IOException {
         this.queue = new ArrayList<>();
         initComponents();
-        STATUSLabel.setVisible(false);
+        online_swing.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -40,7 +40,7 @@ public class Server extends javax.swing.JFrame {
         startButton = new javax.swing.JButton();
         Label = new javax.swing.JLabel();
         Port_server_swing = new javax.swing.JTextField();
-        STATUSLabel = new javax.swing.JLabel();
+        online_swing = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         Requeste_recebidos_swing = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -74,9 +74,9 @@ public class Server extends javax.swing.JFrame {
         Port_server_swing.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         Port_server_swing.setText("8888");
 
-        STATUSLabel.setFont(new java.awt.Font("Arial Black", 0, 12)); // NOI18N
-        STATUSLabel.setForeground(new java.awt.Color(0, 100, 0));
-        STATUSLabel.setText("ONLINE!");
+        online_swing.setFont(new java.awt.Font("Arial Black", 0, 12)); // NOI18N
+        online_swing.setForeground(new java.awt.Color(0, 100, 0));
+        online_swing.setText("ONLINE!");
 
         Requeste_recebidos_swing.setColumns(20);
         Requeste_recebidos_swing.setRows(5);
@@ -169,7 +169,7 @@ public class Server extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(12, 12, 12)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(STATUSLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(online_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -193,7 +193,7 @@ public class Server extends javax.swing.JFrame {
                             .addComponent(controlar_reqswing)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(STATUSLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(online_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -246,9 +246,9 @@ public class Server extends javax.swing.JFrame {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     return false;
                 }
-                STATUSLabel.setForeground(new java.awt.Color(0, 100, 0));
-                STATUSLabel.setText("ONLINE!");
-                STATUSLabel.setVisible(true);
+                online_swing.setForeground(new java.awt.Color(0, 100, 0));
+                online_swing.setText("ONLINE!");
+                online_swing.setVisible(true);
                 connectedSocket = s;
 
                 // get the output stream from the socket.
@@ -341,23 +341,22 @@ public class Server extends javax.swing.JFrame {
         Logic_server.execute();
 
         //Monitor Thread to comunicate with the Monitor
-        SwingWorker worker2 = new SwingWorker<Boolean, Integer>() {
-
-            @Override
-            protected Boolean doInBackground() throws Exception {
+        
+        class comunicate_withMonitor extends Thread{
+            
+            public void run(){
                 monitorPortId = parseInt(monitorPort.getText());;
                 //monitor
-                Socket s2;
+                Socket s2 = null;
                 try {
                     s2 = new Socket("localhost", monitorPortId);
 
                 } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                    return false;
                 }
-                STATUSLabel.setForeground(new java.awt.Color(0, 100, 0));
-                STATUSLabel.setText("ONLINE!");
-                STATUSLabel.setVisible(true);
+                online_swing.setForeground(new java.awt.Color(0, 100, 0));
+                online_swing.setText("ONLINE!");
+                online_swing.setVisible(true);
 
                 // get the output stream from the socket.
                 OutputStream outputStream = null;
@@ -391,31 +390,40 @@ public class Server extends javax.swing.JFrame {
                     System.out.println(str + monitorPortId);
                     if (!"MonitorAc".equals(str)) {
                         connectedSocket = null;
-                        return false;
                     }
                 } catch (IOException e) {
                 }
                 while (true) {
-                    //Sending Response to Monitor
-                    String requestInfo = dataInputStream.readUTF();
-                    StringBuilder sendInfoToMonitor = new StringBuilder();
-                    controlar_request.keySet().forEach(key -> {
-                        sendInfoToMonitor
-                                .append(controlar_request.get(key))
-                                .append(",");
-                    });
-                    System.out.println(sendInfoToMonitor);
-                    dataOutputStream.writeUTF(String.valueOf(controlar_request.size() + queue.size()) + ";" + sendInfoToMonitor);
+                    try {
+                        //Sending Response to Monitor
+                        String requestInfo = dataInputStream.readUTF();
+                        StringBuilder sendInfoToMonitor = new StringBuilder();
+                        controlar_request.keySet().forEach(key -> {
+                            sendInfoToMonitor
+                                    .append(controlar_request.get(key))
+                                    .append(",");
+                        });
+                        System.out.println(sendInfoToMonitor);
+                        dataOutputStream.writeUTF(String.valueOf(controlar_request.size() + queue.size()) + ";" + sendInfoToMonitor);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
+            
+            
             }
-        };
-        worker2.execute();
+        
+        
+        }
+
+          comunicate_withMonitor cm = new comunicate_withMonitor();
+          cm.start();
 
         //Thread to see when a thread finishes the work
-        SwingWorker Logic_dist_req = new SwingWorker<Boolean, Integer>() {
-
-            @Override
-            protected Boolean doInBackground() throws Exception {
+        
+        class Thread_finishedprocess extends Thread{
+            
+            public void run(){
                 while (true) {
                     //ATUALIZAR GUI
                     queue_sizeswing.setText(String.valueOf(queue.size()));
@@ -433,9 +441,13 @@ public class Server extends javax.swing.JFrame {
                         controlar_reqswing.setText(String.valueOf(controlar_request.size()));
                     }
                 }
+            
             }
-        };
-        Logic_dist_req.execute();
+        
+        
+        }
+          Thread_finishedprocess fp = new Thread_finishedprocess();
+          fp.start();
     }//GEN-LAST:event_startButtonActionPerformed
 
 
@@ -489,7 +501,6 @@ public class Server extends javax.swing.JFrame {
     private javax.swing.JLabel Label;
     private javax.swing.JTextField Port_server_swing;
     private javax.swing.JTextArea Requeste_recebidos_swing;
-    private javax.swing.JLabel STATUSLabel;
     private javax.swing.JLabel cont_req_recebidos_swing;
     private javax.swing.JLabel cont_reqexecutados_swing;
     private javax.swing.JLabel controlar_reqswing;
@@ -503,6 +514,7 @@ public class Server extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField monitorPort;
+    private javax.swing.JLabel online_swing;
     private javax.swing.JLabel queue_sizeswing;
     private javax.swing.JTextArea requeste_executado_swing;
     private javax.swing.JButton startButton;
