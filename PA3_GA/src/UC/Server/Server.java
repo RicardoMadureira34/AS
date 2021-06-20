@@ -389,7 +389,7 @@ public class Server extends javax.swing.JFrame {
                         controlar_request.keySet().forEach(key -> {
                             sendInfoToMonitor.append(controlar_request.get(key)).append(",");
                         });
-                        System.out.println(sendInfoToMonitor);
+                       
                         dataOutputStream.writeUTF(String.valueOf(controlar_request.size() + queue.size()) + ";" + sendInfoToMonitor);
                     } catch (IOException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);

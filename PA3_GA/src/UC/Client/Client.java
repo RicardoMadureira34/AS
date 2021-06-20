@@ -257,7 +257,6 @@ public class Client extends javax.swing.JFrame {
                         System.out.println(Requests_pendentes.toString());
                         RequestsList_forallexecuted.add(request_executados);
                         Requests_executados.put(parseInt(rec[1]), request_executados);
-                        System.out.println(RequestsList_forallexecuted.size() + "--");
                         if (!Requests_pendentes.isEmpty()) {
                             StringBuilder texte_swing = new StringBuilder();
                             Requests_pendentes.keySet().forEach(key -> {
