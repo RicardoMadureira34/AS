@@ -207,7 +207,6 @@ public class Client extends javax.swing.JFrame {
                     s = new Socket("localhost", portId);
                 } catch (IOException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.println("No LoadBalancer Found on Port " + portId);
                     connectedSocket = null;
                 }
                 
@@ -217,8 +216,6 @@ public class Client extends javax.swing.JFrame {
                 connectedSocket = s;
                 Requests_pendentes = new HashMap<>(); 
                 Requests_executados = new HashMap<>();
-
-                // get the output stream from the socket.
                 OutputStream outputStream = null;
                 try {
                     outputStream = s.getOutputStream();
@@ -232,23 +229,19 @@ public class Client extends javax.swing.JFrame {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                // create a data output stream from the output stream so we can send data through it
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
                 String mensagem_aviso = "Clientevivo!";
-                System.out.println("Mandar mensagem de aviso para o LoadBalancer");
 
                 try {
                     dataOutputStream.writeUTF(mensagem_aviso);
                     dataOutputStream.flush();
                     String str = dataInputStream.readUTF();
-                    String[] arr_String = str.split(";", -2);
-                    if (!arr_String[1].equals("Client")) {
-                        System.out.println("MISTAKE-SERVER PORT");
+                    String[] string_rec = str.split(";", -2);
+                    if (!string_rec[1].equals("Client")) {
                         connectedSocket = null;
                     }
-                    id = parseInt(arr_String[0]);
-                    System.out.println("My Id is->" + id);
+                    id = parseInt(string_rec[0]);
                     Id_Client.setText(String.valueOf(id));
                 } catch (IOException e) {
                 }
@@ -259,30 +252,28 @@ public class Client extends javax.swing.JFrame {
                     try {
                         //Receber Requests!
                         String request_executados = dataInputStream.readUTF();
-                        String[] arrOfStr = request_executados.split(Pattern.quote("|"), -2);
-                        Requests_pendentes.remove(parseInt(arrOfStr[1]));
+                        String[] rec = request_executados.split(Pattern.quote("|"), -2);
+                        Requests_pendentes.remove(parseInt(rec[1]));
                         System.out.println(Requests_pendentes.toString());
                         RequestsList_forallexecuted.add(request_executados);
-                        Requests_executados.put(parseInt(arrOfStr[1]), request_executados);
+                        Requests_executados.put(parseInt(rec[1]), request_executados);
                         System.out.println(RequestsList_forallexecuted.size() + "--");
                         if (!Requests_pendentes.isEmpty()) {
-                            StringBuilder String_mod = new StringBuilder();
+                            StringBuilder texte_swing = new StringBuilder();
                             Requests_pendentes.keySet().forEach(key -> {
-                                String_mod.append("Request-").append(key).append(" : ").append(Requests_pendentes.get(key)).append("\n");
+                                texte_swing.append("Request-").append(key).append(" : ").append(Requests_pendentes.get(key)).append("\n");
                             });
                             
-                            Request_pendent_Swing.setText(String_mod.toString());
+                            Request_pendent_Swing.setText(texte_swing.toString());
                         } else {
                             Request_pendent_Swing.setText("");
                         }
-                        StringBuilder String_mod2 = new StringBuilder();
+                        StringBuilder texte_swing2 = new StringBuilder();
                         for (int i = 0; i < RequestsList_forallexecuted.size(); i++) {
-                            String_mod2.append("Request-")
-                                    .append(RequestsList_forallexecuted.get(i)+"\n");
+                            texte_swing2.append("Request-").append(RequestsList_forallexecuted.get(i)+"\n");
                         }
                         
-                        Request_executados_swing.setText(String_mod2.toString());
-                        System.out.println("CLIENT->" + request_executados);
+                        Request_executados_swing.setText(texte_swing2.toString());
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }

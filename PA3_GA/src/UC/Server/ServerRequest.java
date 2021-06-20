@@ -45,28 +45,7 @@ public class ServerRequest extends Thread {
 
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        System.out.println("REJECTED FLAG->" + this.processo_Rejeitado);
-        if (this.processo_Rejeitado == 1) {
-            String[] val = request.split("[|]", 0);
-            System.out.println(val.length);
-            String rejectedRequest = val[0] + "|" + val[1] + "|" + String.valueOf(0) + serverId + "|" + String.valueOf(0) + String.valueOf(3) + "|" + val[4] + "|" + val[5] + "|";
-            try {
-                dataOutputStream.writeUTF(rejectedRequest );
-            } catch (IOException ex) {
-                Logger.getLogger(ServerRequest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            try {
-                dataOutputStream.flush();
-            } catch (IOException ex) {
-                Logger.getLogger(ServerRequest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.out.println("SERVER_REQUEST_ENVIADO_REJECTED " + rejectedRequest);
-            return;
-        }
-
         try {
-            System.out.println("request " + request);
             String[] val = request.split("[|]", 0);
             StringBuilder r = new StringBuilder();
             StringBuilder sb = new StringBuilder();
@@ -88,21 +67,16 @@ public class ServerRequest extends Thread {
             }
             
             r.append(val[0]).append("|").append(val[1]).append("|").append(serverId).append("|").append("02|").append(val[4]).append("|").append(sb.toString()).append("|");
-
-            System.out.println("SERVER_RESQUEST_RECEBIDO->" + request + "Port->" + SOCKET_PORT);
-            sleep(5000 * niter); // 5s
+            sleep(5000 * niter);
             dataOutputStream.writeUTF(r.toString());
             dataOutputStream.flush();
-            System.out.println("SERVER_REQUEST_ENVIADO " + r.toString());
             request_executados.add(r.toString());
             //ATUALIZAR GUI
-            StringBuilder newTextArea = new StringBuilder();
+            StringBuilder text_swing = new StringBuilder();
         for (int i = 0; i < request_executados.size(); i++) {
-            newTextArea.append("Request-")
-                    .append(request_executados.get(i))
-                    .append("\n");
+            text_swing.append("Request-").append(request_executados.get(i)).append("\n");
         }
-        requeste_executado_swing.setText(newTextArea.toString());
+        requeste_executado_swing.setText(text_swing.toString());
         cont_reqexecutados_swing.setText(String.valueOf(request_executados.size()));
             
             controlar_request.remove(position_request);

@@ -46,12 +46,12 @@ public class Send_Request extends Thread {
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
         String str =  String.valueOf(id_cliente) + "|" + String.valueOf(this.id_requeste) + "|00|01|" + String.valueOf(this.iteracoes) + "|0|";
         requeste_pendentes.put(id_requeste, str);
-        StringBuilder String_mod = new StringBuilder(); //criar strings modificaveis
+        StringBuilder texte_swing = new StringBuilder(); //criar strings modificaveis
         requeste_pendentes.keySet().forEach(key -> {
-            String_mod.append("Request-").append(key).append(" : ").append(requeste_pendentes.get(key)) //valor da nossa key
+            texte_swing.append("Request-").append(key).append(" : ").append(requeste_pendentes.get(key)) //valor da nossa key
                     .append("\n");
         });
-        pendentes_swing.setText(String_mod.toString());
+        pendentes_swing.setText(texte_swing.toString());
         try {
             dataOutputStream.writeUTF(str);
             dataOutputStream.flush();

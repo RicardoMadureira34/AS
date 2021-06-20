@@ -174,8 +174,8 @@ public class Monitor extends javax.swing.JFrame {
 
     
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        //Worker that connects the monitor with the LB and replies the LB with info when LB asks
         
+        //conectar com o LB
         class Logic_lb extends Thread{
             
         public void run(){
@@ -191,8 +191,6 @@ public class Monitor extends javax.swing.JFrame {
                 online_swing.setText("ONLINE!");
                 online_swing.setVisible(true);
                 connectedSocket = s;
-
-                // get the output stream from the socket.
                 OutputStream outputStream = null;
                 try {
                     outputStream = s.getOutputStream();
@@ -206,8 +204,6 @@ public class Monitor extends javax.swing.JFrame {
                 } catch (IOException ex) {
                     Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                // create a data output stream from the output stream so we can send data through it
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
                 String request = "monitorvivo";
@@ -218,17 +214,16 @@ public class Monitor extends javax.swing.JFrame {
 
                 } catch (IOException e) {
                 }
-                //Waiting of LB asks for info on the state and Requests per server
                 while (true) {
                 try {
                     String informacao_request = dataInputStream.readUTF();
                     String info = null;
 
-                    StringBuilder newTextArea = new StringBuilder();
+                    StringBuilder text_swing = new StringBuilder();
                     trabload_forservers.keySet().forEach(key -> {
-                        newTextArea.append("").append(key).append(";").append(trabload_forservers.get(key)).append("|");
+                        text_swing.append("").append(key).append(";").append(trabload_forservers.get(key)).append("|");
                     });
-                    dataOutputStream.writeUTF(newTextArea.toString());
+                    dataOutputStream.writeUTF(text_swing.toString());
                 } catch (IOException ex) {
                     Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -241,7 +236,7 @@ public class Monitor extends javax.swing.JFrame {
         Logic_lb lb = new Logic_lb();
         lb.start();
         
-        //Thread to comunicate with Servers
+        //Comunicar com servidor
         SwingWorker Logic_recived_fromservers = new SwingWorker<Boolean, Integer>() {
 
             @Override
@@ -284,14 +279,13 @@ public class Monitor extends javax.swing.JFrame {
                     
                    
                     if ("Monitorvivo".equals(enviar_forserver[0])) { //monitor comunica com o servidor
-//                        System.out.println("servidor vivo!" + arrOfStr[1]);
                         dataOutputStream.writeUTF("MonitorAc");
                         servers_conectados.put(parseInt(enviar_forserver[1]), connectedSocket);
-                        StringBuilder newTextArea = new StringBuilder();
+                        StringBuilder text_swing = new StringBuilder();
                         servers_conectados.keySet().forEach(key -> {
-                            newTextArea.append("Server ID:").append(key).append(" = ").append(servers_conectados.get(key)).append("\n");
+                            text_swing.append("Server ID:").append(key).append(" = ").append(servers_conectados.get(key)).append("\n");
                         });
-                        Serveronline_swing.setText(newTextArea.toString());
+                        Serveronline_swing.setText(text_swing.toString());
                         ThreadMonitor tm = new ThreadMonitor(s2, servers_conectados, parseInt(enviar_forserver[1]), Serveronline_swing, portId_load, trabload_forservers,request_cadaservidor, process_forserver_swing);
                         tm.start();
                     }

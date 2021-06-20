@@ -18,70 +18,63 @@ public class ThreadLB_Request extends Thread {
     private Socket SOCKET_PORT;
     private final Socket socket_Monitor;
     private final String request_cliente;
-    private final int SERVERIDINCASECRASH;
-    HashMap<Integer, Socket> allClientsSocketsConnected;
-    HashMap<Integer, Socket> allServersSocketsConnected;
-    HashMap<Integer, ArrayList> allRequestsOnEachServer;
+    private final int ser_crash;
+    HashMap<Integer, Socket> clientes_connect;
+    HashMap<Integer, Socket> server_connect;
+    HashMap<Integer, ArrayList> req_cadaservidor;
 
-    public ThreadLB_Request(String request_cliente, HashMap<Integer, Socket> allServersSocketsConnected, Socket serverSocketMonitor, HashMap<Integer, Socket> allClientsSocketsConnected, HashMap<Integer, ArrayList> allRequestsOnEachServer, int SERVERIDINCASECRASH) {
+    public ThreadLB_Request(String request_cliente, HashMap<Integer, Socket> server_connect, Socket serverSocketMonitor, HashMap<Integer, Socket> clientes_connect, HashMap<Integer, ArrayList> req_cadaservidor, int ser_crash) {
         this.request_cliente = request_cliente;
-        this.allServersSocketsConnected = allServersSocketsConnected;
+        this.server_connect = server_connect;
         this.socket_Monitor = serverSocketMonitor;
-        this.allClientsSocketsConnected = allClientsSocketsConnected;
-        this.allRequestsOnEachServer = allRequestsOnEachServer;
-        this.SERVERIDINCASECRASH = SERVERIDINCASECRASH;
+        this.clientes_connect = clientes_connect;
+        this.req_cadaservidor = req_cadaservidor;
+        this.ser_crash = ser_crash;
     }
-
-    /**
-     * thread of load balancer, created when receive infos
-     */
     @Override
     public void run() {
         try {
-            //Ask monitor for information!
             DataOutputStream dataOutputStream4 = new DataOutputStream(this.socket_Monitor.getOutputStream());
-            dataOutputStream4.writeUTF("NeedInfoPls");
+            dataOutputStream4.writeUTF("precisa de informaçao");
             DataInputStream dataInputStream4 = new DataInputStream(this.socket_Monitor.getInputStream());
             String infoFromMonitor = dataInputStream4.readUTF();
-            int serverWithLowestWork = 0;
-            int lowestWork = 5;
-            int ifServersAreAllFull = 0;
-            //Split Servers
-            String[] arrOfStr = infoFromMonitor.split("[|]", -2);
+            int servidor_menortrab = 0;
+            int menortrab = 5;
+            int server_full = 0;
+            //Split info servidores
+            String[] rec = infoFromMonitor.split("[|]", -2);
 
            //o que o thread deve fazer para escolher o server a quem mandar request
-            if (SERVERIDINCASECRASH == 9999999) {
-                for (String arrOfStr1 : arrOfStr) {
+            if (ser_crash == 9999999) {
+                for (String arrOfStr1 : rec) {
                     String[] arrOfStrData = arrOfStr1.split(";", -2);
                     if (arrOfStrData.length == 1) {
                         break;
                     }
-                    if (parseInt(arrOfStrData[1]) <= lowestWork) {
-                        lowestWork = parseInt(arrOfStrData[1]);
-                        serverWithLowestWork = parseInt(arrOfStrData[0]);
+                    if (parseInt(arrOfStrData[1]) <= menortrab) {
+                        menortrab = parseInt(arrOfStrData[1]);
+                        servidor_menortrab = parseInt(arrOfStrData[0]);
                         if (parseInt(arrOfStrData[1]) == 5) {
-                            ifServersAreAllFull++;
+                            server_full++;
                         }
                     }
                 }
-                //Case if all servers are FULL!
-                System.out.println("\n\n---SERVERS ARE FULL->"+ifServersAreAllFull+"--"+allServersSocketsConnected.size());
-                if (ifServersAreAllFull == allServersSocketsConnected.size()) {
-                    Integer[] keys = allServersSocketsConnected.keySet().toArray(new Integer[allServersSocketsConnected.size()]);
+                //Se os servidores tiverem cheios
+                
+                if (server_full == server_connect.size()) {
+                    Integer[] keys = server_connect.keySet().toArray(new Integer[server_connect.size()]);
                     int key = keys[new Random().nextInt(keys.length)];
-                    serverWithLowestWork = key;
-                    System.out.println("\n\nDENTRO->"+serverWithLowestWork+"---"+keys);
+                    servidor_menortrab = key;
                 }
-                System.out.println("SERVIDOR SELECIONADO! ->" + serverWithLowestWork);
             } else {
-                serverWithLowestWork = SERVERIDINCASECRASH;
+                servidor_menortrab = ser_crash;
             }
-            //Saving in a HashTable in case of a fail
-            allRequestsOnEachServer.get(serverWithLowestWork).add(request_cliente);
+           
+            req_cadaservidor.get(servidor_menortrab).add(request_cliente);
 
             OutputStream outputStream = null;
             try {
-                outputStream = this.allServersSocketsConnected.get(serverWithLowestWork).getOutputStream();
+                outputStream = this.server_connect.get(servidor_menortrab).getOutputStream();
             } catch (IOException ex) {
                 Logger.getLogger(ThreadLB_Request.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -89,7 +82,6 @@ public class ThreadLB_Request extends Thread {
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             dataOutputStream.writeUTF(request_cliente);
             dataOutputStream.flush();
-            System.out.println("LOAD_BALANCER_REQUEST_ENVIADO->" + request_cliente + SOCKET_PORT);
         } catch (IOException ex) {
             Logger.getLogger(ThreadLB_Request.class.getName()).log(Level.SEVERE, null, ex);
         }

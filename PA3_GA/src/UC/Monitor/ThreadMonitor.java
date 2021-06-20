@@ -38,9 +38,6 @@ public class ThreadMonitor extends Thread {
         this.process_forserver = process_forserver;
     }
 
-    /**
-    * thread 
-    */
     @Override
     public void run() {
 
@@ -86,7 +83,7 @@ public class ThreadMonitor extends Thread {
                 if (position == 0) {
                     StringBuilder show_onswing = new StringBuilder();
                     request_inservers.keySet().stream().map(key -> {
-                        show_onswing.append("Server ID:").append(key).append(" = ");
+                        show_onswing.append("Servidor:").append(key).append(" = ");
                         return key;
                     }).map(key -> {
                         for (int i = 0; i < request_inservers.get(key).size(); i++) {
@@ -111,11 +108,11 @@ public class ThreadMonitor extends Thread {
             this.see_serveronline.remove(id);
             this.request_inservers.remove(id);
             this.trab_onEachThreadServer.remove(id);
-            StringBuilder newTextArea = new StringBuilder();
+            StringBuilder texte_swing = new StringBuilder();
             see_serveronline.keySet().forEach(key -> {
-                newTextArea.append("Server ID:").append(key).append(" = ").append(see_serveronline.get(key)).append("\n");
+                texte_swing.append("Servidor:").append(key).append(" = ").append(see_serveronline.get(key)).append("\n");
             });
-            server_online_swing.setText(newTextArea.toString()); //ver servers online
+            server_online_swing.setText(texte_swing.toString()); //ver servers online
 
     }   catch (InterruptedException ex) {
             Logger.getLogger(ThreadMonitor.class.getName()).log(Level.SEVERE, null, ex);

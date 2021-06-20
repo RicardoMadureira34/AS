@@ -25,11 +25,10 @@ public class LoadBalancer extends javax.swing.JFrame {
     private Socket SocketClient;
     private Socket serverSocketMonitor;
     HashMap<Integer, Socket> allServerSocketsConnected = new HashMap<>();
-    //HashTable so main LB thread can access all the threads that are waiting for requests of each server
     HashMap<Integer, ThreadLB_ReceberRequest> allServerReceiverThreads = new HashMap<>();
     HashMap<Integer, Socket> all_clientessocket_conectados = new HashMap<>();
 
-    //HashTable that contains all the requests on each server!
+    //HashTable que contem os requests de cada servidor
     HashMap<Integer, ArrayList> allRequestsOnEachServer = new HashMap<>();
 
     public LoadBalancer() throws IOException {
@@ -243,24 +242,21 @@ public class LoadBalancer extends javax.swing.JFrame {
                         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                         try {
                             String str = dataInputStream2.readUTF();
-                            //If Server asks to connect
                             if ("Servidorvivo".equals(str)) {
-                                //Write and send the Id to the new Server
-                                System.out.println("Sending new Server ID->" + numberOfServers);
+                                System.out.println("mandar id do servidor->" + numberOfServers);
                                 dataOutputStream.writeUTF(String.valueOf(numberOfServers) + ";Server");
                                 dataOutputStream.flush();
-                                //Save new server on various hashtables, connectedServers and initialize requests arrayList for the server
+                                //Salvar os novos servidores
                                 allServerSocketsConnected.put(numberOfServers, s2);
                                 allRequestsOnEachServer.put(numberOfServers, new ArrayList<String>());
-                                //Create a Thread that only reads replies from this Server!
                                 ThreadLB_ReceberRequest receiveRequests = new ThreadLB_ReceberRequest(all_clientessocket_conectados, s2, allRequestsOnEachServer);
                                 receiveRequests.start();
            
-                                StringBuilder newTextArea = new StringBuilder();
+                                StringBuilder text_swing = new StringBuilder();
                                 allServerSocketsConnected.keySet().forEach(key -> {
-                                    newTextArea.append("Server ID:").append(key).append(" = ").append(allServerSocketsConnected.get(key)).append("\n");
+                                    text_swing.append("Servidor ID:").append(key).append(" = ").append(allServerSocketsConnected.get(key)).append("\n");
                                 });
-                                Servidores_connect_Swing.setText(newTextArea.toString());
+                                Servidores_connect_Swing.setText(text_swing.toString());
                                 numberOfServers++;
                                 nServers.setText(String.valueOf(numberOfServers));
                             } 
@@ -318,17 +314,16 @@ public class LoadBalancer extends javax.swing.JFrame {
                         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                         try {
                             String str = dataInputStream2.readUTF();
-                            //If a new Client is Asking to connect
                             if ("Clientevivo!".equals(str)) {
-                                System.out.println("Sending new Client ID->" + numero_clientes);
-                                //update Gui and some variables
+                                System.out.println("mandar id do cliente->" + numero_clientes);
+          
                                 dataOutputStream.writeUTF(String.valueOf(numero_clientes) + ";Client");
                                 all_clientessocket_conectados.put(numero_clientes, s2);
-                                StringBuilder newTextArea = new StringBuilder();
+                                StringBuilder text_swing = new StringBuilder();
                                 all_clientessocket_conectados.keySet().forEach(key -> {
-                                    newTextArea.append("Client ID:").append(key).append(" = ").append(all_clientessocket_conectados.get(key)).append("\n");
+                                    text_swing.append("Client ID:").append(key).append(" = ").append(all_clientessocket_conectados.get(key)).append("\n");
                                 });
-                                Client_Connect_Swing.setText(newTextArea.toString());
+                                Client_Connect_Swing.setText(text_swing.toString());
                                 numero_clientes++;
                                 numero_Clients_Swing.setText(String.valueOf(numero_clientes));
                             } else {
@@ -393,7 +388,6 @@ public class LoadBalancer extends javax.swing.JFrame {
                             String str = dataInputStream2.readUTF();
                             //se o monitor se quiser ligar
                             if ("monitorvivo".equals(str)) {
-                                System.out.println("Sending new Monitor");
                                 dataOutputStream.writeUTF("999;Monitor");
 
                             }

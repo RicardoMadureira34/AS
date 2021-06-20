@@ -232,7 +232,7 @@ public class Server extends javax.swing.JFrame {
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
 
 
-        //Thread that comunicates with the LoadBalancer
+        //Comunicar com o LB
         SwingWorker Logic_server = new SwingWorker<Boolean, Integer>() {
 
             @Override
@@ -250,8 +250,6 @@ public class Server extends javax.swing.JFrame {
                 online_swing.setText("ONLINE!");
                 online_swing.setVisible(true);
                 connectedSocket = s;
-
-                // get the output stream from the socket.
                 OutputStream outputStream = null;
                 try {
                     outputStream = s.getOutputStream();
@@ -265,39 +263,33 @@ public class Server extends javax.swing.JFrame {
                 } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                // create a data output stream from the output stream so we can send data through it
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
 
                 String request = "Servidorvivo";
-                System.out.println("Sending Servidorvivo para LoadBalancer");
 
                 try {
                     dataOutputStream.writeUTF(request);
                     dataOutputStream.flush();
                     String str = dataInputStream.readUTF();
-                    String[] arrOfStr = str.split(";", -2);
-                    if (!arrOfStr[1].equals("Server")) {
+                    String[] rec = str.split(";", -2);
+                    if (!rec[1].equals("Server")) {
                         connectedSocket = null;
                         return false;
                     }
-                    id = parseInt(arrOfStr[0]);
-                    System.out.println("My Id is->" + id);
-                    ID_server_swing.setText(arrOfStr[0]);
+                    id = parseInt(rec[0]);
+                    ID_server_swing.setText(rec[0]);
                 } catch (IOException e) {
                 }
                 while (true) {
                     String requestInfo = dataInputStream.readUTF();
                     requeste_iniciais.add(requestInfo);
                     //ATULIZAR A GUI
-                    StringBuilder newTextArea = new StringBuilder();
+                    StringBuilder trxt_swing = new StringBuilder();
                 for (int i = 0; i < requeste_iniciais.size(); i++) {
-                    newTextArea.append("Request-")
-                            .append(requeste_iniciais.get(i))
-                            .append("\n");
+                    trxt_swing.append("Request-").append(requeste_iniciais.get(i)).append("\n");
                 }
-                Requeste_recebidos_swing.setText(newTextArea.toString());
+                Requeste_recebidos_swing.setText(trxt_swing.toString());
                 cont_req_recebidos_swing.setText(String.valueOf(requeste_iniciais.size()));
  
                     
@@ -340,8 +332,8 @@ public class Server extends javax.swing.JFrame {
         };
         Logic_server.execute();
 
-        //Monitor Thread to comunicate with the Monitor
         
+        //Comunicar com o Monitor
         class comunicate_withMonitor extends Thread{
             
             public void run(){
@@ -357,8 +349,6 @@ public class Server extends javax.swing.JFrame {
                 online_swing.setForeground(new java.awt.Color(0, 100, 0));
                 online_swing.setText("ONLINE!");
                 online_swing.setVisible(true);
-
-                // get the output stream from the socket.
                 OutputStream outputStream = null;
                 try {
                     outputStream = s2.getOutputStream();
@@ -380,7 +370,6 @@ public class Server extends javax.swing.JFrame {
                 try {
                     while (true) {
                         if (id != 9999999) {
-                            //make sure there is an ip on this server, otherwise just wait
                             break;
                         }
                     }
@@ -395,13 +384,10 @@ public class Server extends javax.swing.JFrame {
                 }
                 while (true) {
                     try {
-                        //Sending Response to Monitor
                         String requestInfo = dataInputStream.readUTF();
                         StringBuilder sendInfoToMonitor = new StringBuilder();
                         controlar_request.keySet().forEach(key -> {
-                            sendInfoToMonitor
-                                    .append(controlar_request.get(key))
-                                    .append(",");
+                            sendInfoToMonitor.append(controlar_request.get(key)).append(",");
                         });
                         System.out.println(sendInfoToMonitor);
                         dataOutputStream.writeUTF(String.valueOf(controlar_request.size() + queue.size()) + ";" + sendInfoToMonitor);
@@ -419,8 +405,8 @@ public class Server extends javax.swing.JFrame {
           comunicate_withMonitor cm = new comunicate_withMonitor();
           cm.start();
 
-        //Thread to see when a thread finishes the work
         
+        //para ver quando o thread acaba o trab
         class Thread_finishedprocess extends Thread{
             
             public void run(){
