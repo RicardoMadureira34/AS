@@ -107,6 +107,7 @@ public class Server_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Start_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Start_ButtonActionPerformed
+        
         try {                                             
             // TODO add your handling code here:
             
@@ -126,19 +127,20 @@ public class Server_GUI extends javax.swing.JFrame {
             String msg_forload = "servidor";
             dataenviar_forload.writeUTF(msg_forload);
             dataenviar_forload.flush();
-            System.out.println("kjashdkjahkajsdh");
             //----------
             receber_fromload = socketserver.getInputStream();
             DataInputStream datareceber_fromload = new DataInputStream(receber_fromload);
             String str_idServidor = datareceber_fromload.readUTF();
             int id_servidor = Integer.parseInt(str_idServidor);
-            System.out.println("id servidor exeeeeee: " + id_servidor);
+            System.out.println("id servidor: " + id_servidor);
             
             
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            ThreadServer ts = new ThreadServer(socketserver, id_servidor);
+            ts.start();
+            } catch (IOException ex) {
+                Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
         
     }//GEN-LAST:event_Start_ButtonActionPerformed
 

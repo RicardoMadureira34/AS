@@ -37,10 +37,12 @@ public class ThreadRequestClient extends Thread {
     private Scanner scan;
     HashMap<Integer, String> requeste_pendentes = new HashMap<>();
     int requeste_id;
+    int deadline;
     
     JTextField ni;
-    public ThreadRequestClient(String ser, Socket connect, int requeste_id, HashMap<Integer, String> requeste_pendentes, JTextField mostrarrequest, JTextField ni) {
+    public ThreadRequestClient(String ser,int deadline, Socket connect, int requeste_id, HashMap<Integer, String> requeste_pendentes, JTextField mostrarrequest, JTextField ni) {
         this.ser=ser;
+        this.deadline = deadline;
         this.connect = connect;
         this.requeste_id = requeste_id;
         this.requeste_pendentes = requeste_pendentes;
@@ -72,13 +74,12 @@ public class ThreadRequestClient extends Thread {
                 
                 
                 int id = Integer.parseInt(ser);
-                String str_forrequest = "" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() +  "|" + "0" + "|"; 
+                String str_forrequest = "" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() +  "|" + "00" + "|" + deadline; 
                 requeste_pendentes.put(requeste_id, str_forrequest);
-                
                 outToServer.writeUTF(str_forrequest);
                 outToServer.flush();
-                System.out.println(("" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() + "|" + "0" + "|"));
-                mostrarrequest.setText(("" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() + "|" + "0" + "|"));
+                System.out.println(("" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() +  "|" + "00" + "|" + deadline));
+                mostrarrequest.setText(("" + ser + "|" + "" + requeste_id + "|00" + "|01" + "|" + "" + ni.getText() +  "|" + "00" + "|" + deadline));
                     
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadRequestClient.class.getName()).log(Level.SEVERE, null, ex);

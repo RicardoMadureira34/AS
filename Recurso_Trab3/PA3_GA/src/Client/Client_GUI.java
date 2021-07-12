@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class Client_GUI extends javax.swing.JFrame {
     Socket socketConnection;
     int port = 0;
+    int deadline = 0;
     HashMap<Integer, String> Requests_pendentes = new HashMap<>();
      DataInputStream infromClient;
     DataOutputStream infromClient2;
@@ -55,6 +56,8 @@ public class Client_GUI extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         ni_Swing = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        deadline_swing = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CLIENT");
@@ -94,10 +97,19 @@ public class Client_GUI extends javax.swing.JFrame {
 
         jLabel4.setText("NI:");
 
-        ni_Swing.setText("4");
+        ni_Swing.setText("2");
         ni_Swing.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ni_SwingActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Deadline");
+
+        deadline_swing.setText("3");
+        deadline_swing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deadline_swingActionPerformed(evt);
             }
         });
 
@@ -130,7 +142,11 @@ public class Client_GUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ni_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(ni_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(124, 124, 124)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(deadline_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -152,7 +168,9 @@ public class Client_GUI extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(ni_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ni_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(deadline_swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(27, 27, 27)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -179,6 +197,8 @@ public class Client_GUI extends javax.swing.JFrame {
             infromClient2.writeUTF(ms);
             infromClient2.flush();
             ser = infromClient.readUTF(); //ID
+            Receber_Request receive = new Receber_Request(socketConnection);
+            receive.start();
             
             
         } catch (IOException ex) {
@@ -199,7 +219,9 @@ public class Client_GUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here: 
         int request_id = 0;
-        ThreadRequestClient req = new ThreadRequestClient(ser, socketConnection, request_id, Requests_pendentes, mostrarrequestpensentes, ni_Swing);
+        deadline = Integer.parseInt(deadline_swing.getText());
+        
+        ThreadRequestClient req = new ThreadRequestClient(ser, deadline, socketConnection, request_id, Requests_pendentes, mostrarrequestpensentes, ni_Swing);
         req.start();
         request_id++;
 
@@ -208,6 +230,10 @@ public class Client_GUI extends javax.swing.JFrame {
     private void ni_SwingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ni_SwingActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ni_SwingActionPerformed
+
+    private void deadline_swingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deadline_swingActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deadline_swingActionPerformed
 
     /**
      * @param args the command line arguments
@@ -250,11 +276,13 @@ public class Client_GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton StartButton;
+    private javax.swing.JTextField deadline_swing;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField mostrarrequestpensentes;
     private javax.swing.JTextField ni_Swing;
     private javax.swing.JTextField numberport;

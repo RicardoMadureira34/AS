@@ -10,12 +10,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import static java.lang.Integer.parseInt;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -26,11 +28,14 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
     int port_formonitor=0;
     int port_forserver=0;
     int id_client = 0;
+    
     ArrayList<String> list = new ArrayList<String>();
     HashMap<Integer, Socket> hash_clientes_connect = new HashMap<>();
     HashMap<Integer, Socket> allServerSocketsConnected = new HashMap<>();
     HashMap<Integer, Socket> all_clientessocket_conectados = new HashMap<>();
     HashMap<Integer, ArrayList> allRequestsOnEachServer = new HashMap<>();
+    ServerSocket ss_forServer = null;
+    Socket s_forServer = null;
     
 
     /**
@@ -38,6 +43,7 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
      */
     public LoadBalancer_GUI()  {
         initComponents();
+        
         
         
         
@@ -153,72 +159,108 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_numberportActionPerformed
 
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
-
-          ServerSocket ss_forServer = null;
-          ServerSocket ss_forclient = null;
-          InputStream inputfromclient = null;
-          OutputStream outforclient = null;
-          
-                  
-          
+        
         try {
-            int counter = 0;
-            
             
             port_forclient = Integer.parseInt(numberport.getText());
             port_formonitor = Integer.parseInt(port_monito.getText());
             port_forserver = Integer.parseInt(Port_Server_Swing.getText());
             ServerSocket ss_formonitor=new ServerSocket(port_formonitor);
-            Socket s_formonitor=ss_formonitor.accept();
-            ss_forServer=new ServerSocket(port_forserver);
-            ss_forclient=new ServerSocket(port_forclient);
+            
+            ServerSocket ss_forclient = null;
+            InputStream inputfromclient = null;
+            OutputStream outforclient = null;
             
             
-            
-            
-            
-            while(true){
-                try {
-                    Connect_servidor connect_server = new Connect_servidor(ss_forServer, allServerSocketsConnected, allRequestsOnEachServer);
-                    connect_server.start();
-                    //ligacao cliente-load
-                    Socket s_forclient=ss_forclient.accept();
-                    inputfromclient = s_forclient.getInputStream();
-                    outforclient = s_forclient.getOutputStream();
-                    DataInputStream data_inputfromclient = new DataInputStream(inputfromclient);
-                    DataOutputStream data_outforclient = new DataOutputStream(outforclient);
-                    String mensagem_client = data_inputfromclient.readUTF();
-                    if("cliente".equals(mensagem_client)){
-                        System.out.println("enviar id para client " + id_client);
-                        data_outforclient.writeUTF(String.valueOf(id_client));
-                        all_clientessocket_conectados.put(id_client, s_forclient);
-                        id_client++;
-                    }else{
-                        String request = data_inputfromclient.readUTF();
-                        Enviar_paraServidor send_server = new Enviar_paraServidor(request, allServerSocketsConnected,
-                        all_clientessocket_conectados, allRequestsOnEachServer);
-                        //send_server.start();
-                    }
-                    
-                    ThreadLoadBalancer t= new ThreadLoadBalancer(s_forclient,s_formonitor);
-                    t.start();
-                    
-                    ss_formonitor.close();
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            class Connect_servidor extends Thread {
+                
+                
+                
+                public Connect_servidor(){
                 }
                 
+                public void run(){
+                    InputStream inputfromservidor = null;
+                    OutputStream outforservidor = null;
+                    int id_servidor = 0;
+                    
+                    while(true){
+                        try {
+                            //ligacao load-servidor
+                            s_forServer = ss_forServer.accept();
+                            inputfromservidor = s_forServer.getInputStream();
+                            outforservidor = s_forServer.getOutputStream();
+                            DataInputStream data_inputfromservidor = new DataInputStream(inputfromservidor);
+                            DataOutputStream data_outforservidor = new DataOutputStream(outforservidor);
+                            String mensagem_servidor = data_inputfromservidor.readUTF();
+                            if("servidor".equals(mensagem_servidor)){
+                                System.out.println("enviar id para servidor " + id_servidor);
+                                data_outforservidor.writeUTF(String.valueOf(id_servidor));
+                                allServerSocketsConnected.put(id_servidor, s_forServer);
+                                allRequestsOnEachServer.put(id_servidor, new ArrayList<String>());
+                                id_servidor++;
+                            }
+                            
+                        } catch (IOException ex) {
+                            
+                        }
+                    }
+                    
+                    
+                    
+                }
                 
-            }   } catch (IOException ex) {
-            Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            ss_forclient.close();
-            ss_forServer.close();
+            }
+            
+            
+            
+            
+            
+            
+            try {
+                
+                int counter = 0;
+                
+                Socket s_formonitor=ss_formonitor.accept();
+                ss_forServer=new ServerSocket(port_forserver);
+                ss_forclient=new ServerSocket(port_forclient);
+                Connect_servidor connect_server = new Connect_servidor();
+                connect_server.start();
+                while(true){
+                    try {
+                        //ligacao cliente-load
+                        Socket s_forclient=ss_forclient.accept();
+                        inputfromclient = s_forclient.getInputStream();
+                        outforclient = s_forclient.getOutputStream();
+                        DataInputStream data_inputfromclient = new DataInputStream(inputfromclient);
+                        DataOutputStream data_outforclient = new DataOutputStream(outforclient);
+                        String mensagem_client = data_inputfromclient.readUTF();
+                        if("cliente".equals(mensagem_client)){
+                            System.out.println("enviar id para client " + id_client);
+                            data_outforclient.writeUTF(String.valueOf(id_client));
+                            all_clientessocket_conectados.put(id_client, s_forclient);
+                            id_client++;
+                        }
+                        
+                        ThreadLoadBalancer t= new ThreadLoadBalancer(s_forclient,s_formonitor, s_forServer, all_clientessocket_conectados, allServerSocketsConnected, allRequestsOnEachServer);
+                        t.start();
+                        
+                        
+                    } catch (IOException ex) {
+                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    } 
+                    
+                    
+                }   } catch (IOException ex) {
+                    Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         
     
     }//GEN-LAST:event_StartButtonActionPerformed

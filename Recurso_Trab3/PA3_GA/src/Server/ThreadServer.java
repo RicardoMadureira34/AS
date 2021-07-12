@@ -28,29 +28,66 @@ import javax.swing.JTextField;
  * @author root
  */
 public class ThreadServer extends Thread {
-    Socket connect;
-    DataInputStream infromClient;
-    DataOutputStream outToServer;
-    String ser=new String();
-    String SQL=new String();
-    public String input;
-    String request;
-    JTextField re;
-    ArrayList<String> list = new ArrayList<String>();
-    int counter = 0;
-    public ThreadServer(String request, JTextField re, int counter) {
-        this.request = request;
-        this.re = re;
-        this.counter = counter;
+    Socket socketserver;
+    int id_servidor;
+    
+    public ThreadServer(Socket socketserver, int id_servidor) {
+        this.socketserver = socketserver;
+        this.id_servidor = id_servidor;
        
     }
     
     public void run(){
-                    System.out.println("server");
 
- 
+        while(true){
+        
+        try {
+            //System.out.println("asdnahdkasnd");
+            
+            InputStream receber_fromload = null;
+            receber_fromload = socketserver.getInputStream();
+            
+            DataInputStream datareceber_fromload = new DataInputStream(receber_fromload);
+            String requestfromload = datareceber_fromload.readUTF();
+            System.out.println("from load: " + requestfromload);
+            String[] process = requestfromload.split("[|]", 0);
+//            for (String a : process)
+//                System.out.println("process" + a);
+            String str_processed = new String();
+            int deadline = Integer.parseInt(process[6]);
+            int niter = Integer.parseInt(process[4]);
+            System.out.println("niter: " + niter);
+            System.out.println("deadline: " + deadline);
+            String pi = "3.1415926589793";
+            if (niter < 14) {
+                str_processed = pi.substring(0, 2 + niter);
+                //System.out.println("str_processed" + str_processed);
+            }
+            
+            
+            StringBuilder processed = new StringBuilder();
+            processed.append(process[0]).append("|").append(process[1]).append("|").append(id_servidor).append("|")
+            .append("02").append("|").append(process[4]).append("|").append(str_processed).append("|").append(deadline)
+            .append("|");
+            System.out.println("process: " + processed.toString());
+        
+            try {
+                sleep(5000 * niter);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+            
+            DataOutputStream data_enviarforclient = new DataOutputStream(socketserver.getOutputStream());
+            data_enviarforclient.writeUTF(processed.toString());
+            data_enviarforclient.flush();
+            System.out.println("ACORDOU E ENVIOU!");
+                
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }   
+    }
+        
 
-                System.out.println("request vindo do load: " + request);
 
 
             
