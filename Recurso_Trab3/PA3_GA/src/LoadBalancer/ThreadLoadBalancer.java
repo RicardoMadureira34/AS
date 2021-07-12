@@ -92,8 +92,7 @@ public void run(){
             dataOutputStream.writeUTF(str_client);
             dataOutputStream.flush();
             //-----------------------------
-            //enviar para o servidor
-            
+            //enviar para o client
             Receber_request.execute();
             
         } catch (IOException ex) {
@@ -107,13 +106,50 @@ public void run(){
     
    }
 
+//class Receber_request extends Thread{
+//    String str_fromserver;
+//    
+//    public void Receber_request(){
+//        
+//    }
+//    
+//    public void run(){
+//        
+//        while(true){
+//            try {
+//                DataInputStream data_fromserver = new DataInputStream(s_forServer.getInputStream());
+//                str_fromserver = data_fromserver.readUTF();
+//
+//                String[] process_str = str_fromserver.split("[|]", -2);
+//                //enviar para cliente
+//                OutputStream enviar_forclient = null;
+//                enviar_forclient = all_clientessocket_conectados.get(parseInt(process_str[0])).getOutputStream();
+//                DataOutputStream data_forclient = new DataOutputStream(enviar_forclient);
+//                System.out.println("request vindo do servidor: " + str_fromserver);
+//                data_forclient.writeUTF(str_fromserver);
+//
+//
+//
+//
+//                } catch (IOException ex) {
+//
+//                }
+//
+//
+//            }
+//        
+//        
+//        
+//    }
+//}
+
     SwingWorker Receber_request = new SwingWorker<Boolean, Integer>() {
                 
                 @Override
                 protected Boolean doInBackground() throws Exception {
 
                 String str_fromserver;
-                System.out.println("aksjdaksdasgd_Receber_request");
+                
 
                 
         

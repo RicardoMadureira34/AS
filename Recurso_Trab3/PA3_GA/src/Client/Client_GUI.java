@@ -52,12 +52,16 @@ public class Client_GUI extends javax.swing.JFrame {
         numberport = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        mostrarrequestpensentes = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         ni_Swing = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         deadline_swing = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        mostrar_req_pen_swing = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1_receber_exe = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CLIENT");
@@ -81,12 +85,6 @@ public class Client_GUI extends javax.swing.JFrame {
         jLabel2.setText("Enviar Request");
 
         jLabel3.setText("Request(s) Pendentes: ");
-
-        mostrarrequestpensentes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mostrarrequestpensentesActionPerformed(evt);
-            }
-        });
 
         jButton1.setText("Enviar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -113,6 +111,16 @@ public class Client_GUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Request(s) Executados");
+
+        mostrar_req_pen_swing.setColumns(20);
+        mostrar_req_pen_swing.setRows(5);
+        jScrollPane1.setViewportView(mostrar_req_pen_swing);
+
+        jTextArea1_receber_exe.setColumns(20);
+        jTextArea1_receber_exe.setRows(5);
+        jScrollPane3.setViewportView(jTextArea1_receber_exe);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -120,7 +128,6 @@ public class Client_GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mostrarrequestpensentes)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -131,11 +138,12 @@ public class Client_GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 303, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(StartButton))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
                                 .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
@@ -146,8 +154,10 @@ public class Client_GUI extends javax.swing.JFrame {
                                 .addGap(124, 124, 124)
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(deadline_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(deadline_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel6))
+                        .addGap(0, 158, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -173,9 +183,13 @@ public class Client_GUI extends javax.swing.JFrame {
                     .addComponent(deadline_swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(27, 27, 27)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(mostrarrequestpensentes, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 79, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -197,7 +211,7 @@ public class Client_GUI extends javax.swing.JFrame {
             infromClient2.writeUTF(ms);
             infromClient2.flush();
             ser = infromClient.readUTF(); //ID
-            Receber_Request receive = new Receber_Request(socketConnection);
+            Receber_Request receive = new Receber_Request(socketConnection, jTextArea1_receber_exe);
             receive.start();
             
             
@@ -212,16 +226,12 @@ public class Client_GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_numberportActionPerformed
 
-    private void mostrarrequestpensentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarrequestpensentesActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mostrarrequestpensentesActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here: 
         int request_id = 0;
         deadline = Integer.parseInt(deadline_swing.getText());
         
-        ThreadRequestClient req = new ThreadRequestClient(ser, deadline, socketConnection, request_id, Requests_pendentes, mostrarrequestpensentes, ni_Swing);
+        ThreadRequestClient req = new ThreadRequestClient(ser, deadline, socketConnection, request_id, Requests_pendentes, mostrar_req_pen_swing, ni_Swing);
         req.start();
         request_id++;
 
@@ -283,7 +293,11 @@ public class Client_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField mostrarrequestpensentes;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTextArea jTextArea1_receber_exe;
+    private javax.swing.JTextArea mostrar_req_pen_swing;
     private javax.swing.JTextField ni_Swing;
     private javax.swing.JTextField numberport;
     // End of variables declaration//GEN-END:variables
