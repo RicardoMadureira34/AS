@@ -161,7 +161,7 @@ public class Server_GUI extends javax.swing.JFrame {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             //alguma_coisa();
-            if (controlar_req.size() < 3 && queue.size() == 0) {
+            if (controlar_req.size() < 6 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
                 String str_processed = new String();
                 int deadline = Integer.parseInt(process[6]);
@@ -169,7 +169,8 @@ public class Server_GUI extends javax.swing.JFrame {
                 System.out.println("Count -> " + count);
                 controlar_req.put(count, new DataHolder.Data(str, deadline));
                 System.out.println("inseriu na hash");
-                ThreadServer ts = new ThreadServer(controlar_req.get(min_deadile(controlar_req)), socketserver, id_servidor, min_deadile(controlar_req), controlar_req);
+                //print(controlar_req);
+                ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req));
                 ts.start();
 
             } else if (queue.size() < 2) {
@@ -184,16 +185,23 @@ public class Server_GUI extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
+
     public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
 
         List<Map.Entry<Integer, DataHolder.Data>> list = new ArrayList<>(controlar_dealine.entrySet());
-        System.out.println("List -> " + list);
+        //System.out.println("List -> " + list);
         Collections.sort(list, Comparator.comparing(o -> o.getValue().value));
 
         System.out.println("Menor -> " + list.stream().findFirst().get().getKey());
         return list.stream().findFirst().get().getKey();
     }
 
+    public void print(HashMap<Integer, DataHolder.Data> example) {
+        example.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+    }
+//
 //    public void alguma_coisa() {
 //
 //        if (controlar_req.size() < 3 && queue.size() > 0) {
@@ -206,6 +214,7 @@ public class Server_GUI extends javax.swing.JFrame {
 //
 //        }
 //    }
+
     /**
      * @param args the command line arguments
      */

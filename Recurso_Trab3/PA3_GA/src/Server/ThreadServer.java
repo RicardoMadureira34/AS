@@ -18,6 +18,7 @@ import java.lang.System.Logger.Level;
 import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,79 +37,42 @@ public class ThreadServer extends Thread {
     Socket socketserver;
     int id_servidor;
     int min = 0;
-    //String req;
     HashMap<String, Integer> controlar_dealine = new HashMap<>();
     HashMap<Integer, DataHolder.Data> controlar_req = new HashMap<>();
     HashMap<Integer, DataHolder.Data> req = new HashMap<>();
     HashMap<String, Integer> entry = new HashMap<>();
     ArrayList<String> exe_array = new ArrayList<>();
     ArrayList<Integer> exe_array2 = new ArrayList<>();
-    int count;
+    int count2;
 
-    static class Data {
-
-        String key;
-        Integer value;
-
-        public Data(String key, Integer value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "Data{"
-                    + "key='" + key + '\''
-                    + ", value=" + value
-                    + '}';
-        }
+    public ThreadServer(HashMap<Integer, DataHolder.Data> controlar_req, Socket socketserver, int id_servidor, int count2) {
+        this.socketserver = socketserver;
+        this.id_servidor = id_servidor;
+        this.count2 = count2;
+        this.controlar_req = controlar_req;
     }
 
-    public ThreadServer(HashMap<Integer, DataHolder.Data> req, Socket socketserver, int id_servidor, int count, HashMap<Integer, DataHolder.Data> controlar_req) {
-        this.socketserver = socketserver;
-            this.id_servidor = id_servidor;
-        this.req = req;
-        this.count = count;
-        this.controlar_req = controlar_req;
-
+    public void print(HashMap<Integer, DataHolder.Data> example) {
+        example.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
     }
 
     public void run() {
 
         try {
 
-//                InputStream receber_fromload = null;
-//                receber_fromload = socketserver.getInputStream();
-//
-//                DataInputStream datareceber_fromload = new DataInputStream(receber_fromload);
-//                String requestfromload = datareceber_fromload.readUTF();
-            //exe_array.add(requestfromload);
-            
-            //String[] process = req.values([1]);
-            
-            
-            String[] process = req.split("[|]", 0);
-//                System.out.println("from load: " + requestfromload);
-//
-//                String[] process = requestfromload.split("[|]", 0);
-//                for (int i = 0; i < exe_array.size(); i++) {
-//                    String[] process2 = exe_array.get(i).split("[|]", 0);
-//                    int deadline2 = Integer.parseInt(process2[6]);
-//                    exe_array2.add(deadline2);
-//                    min = Collections.min(exe_array2);
-//
-//                }
-//            for (String a : process)
-//                System.out.println("process" + a);
+            System.out.println("Print1 -> ");
+            print(controlar_req);
+
+            String[] process = controlar_req.get(count2).key.split("[|]", 0);
+            System.out.println("Process -> " + Arrays.toString(process));
+
             String str_processed = new String();
             int deadline = Integer.parseInt(process[6]);
             int niter = Integer.parseInt(process[4]);
             System.out.println("niter: " + niter);
             System.out.println("deadline: " + deadline);
-            //controlar_dealine.put(requestfromload, deadline);
-            //System.out.println("haspmap: " + controlar_dealine);
-            //Integer minValue = controlar_dealine.entrySet().stream().min(Map.Entry.comparingByValue()).get().getValue();
-            //System.out.println("minvalue" + minValue);
 
             String pi = "3.1415926589793";
             if (niter < 14) {
@@ -127,12 +91,16 @@ public class ThreadServer extends Thread {
             } catch (InterruptedException ex) {
                 java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            System.out.println("ACORDOU E ENVIOU!");
 
             DataOutputStream data_enviarforclient = new DataOutputStream(socketserver.getOutputStream());
             data_enviarforclient.writeUTF(processed.toString());
             data_enviarforclient.flush();
-            controlar_req.remove(count);
+            System.out.println("ACORDOU E ENVIOU!");
+
+            // Remove from queue
+            controlar_req.remove(count2);
+            System.out.println("Print2 ->");
+            print(controlar_req);
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
