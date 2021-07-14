@@ -12,7 +12,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +29,8 @@ public class Server_GUI extends javax.swing.JFrame {
 
     int portserver = 0;
     Socket socketserver;
-    HashMap<Integer, HashMap> controlar_req = new HashMap<>();
+    //HashMap<Integer, HashMap> controlar_req = new HashMap<>();
+    HashMap<Integer, DataHolder.Data> controlar_req = new HashMap<>();
     HashMap<String, Integer> req_deadline = new HashMap<>();
     HashMap<Integer, Integer> controlar_dealine = new HashMap<>();
     int count = 0;
@@ -47,7 +51,6 @@ public class Server_GUI extends javax.swing.JFrame {
     public void Start_Server() {
 
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -142,30 +145,31 @@ public class Server_GUI extends javax.swing.JFrame {
             receber_fromload = socketserver.getInputStream();
             datareceber_fromload = new DataInputStream(receber_fromload);
             str_idServidor = datareceber_fromload.readUTF();
-            
+
             id_servidor = Integer.parseInt(str_idServidor);
             System.out.println("id servidor: " + id_servidor);
-            
-            } catch (IOException ex) {
+
+        } catch (IOException ex) {
             Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         while (true) {
             try {
                 str = datareceber_fromload.readUTF();
-                
+
             } catch (IOException ex) {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (controlar_req.size() < 5) {
+            //alguma_coisa();
+            if (controlar_req.size() < 3 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
                 String str_processed = new String();
                 int deadline = Integer.parseInt(process[6]);
                 count++;
-                System.out.println("count: " + count);
-                controlar_req.put(count, (req_deadline.put(str, deadline)));
+                System.out.println("Count -> " + count);
+                controlar_req.put(count, new DataHolder.Data(str, deadline));
                 System.out.println("inseriu na hash");
-                ThreadServer ts = new ThreadServer(str, socketserver, id_servidor, min_deadile(controlar_req), controlar_req);
+                ThreadServer ts = new ThreadServer(controlar_req.get(min_deadile(controlar_req)), socketserver, id_servidor, min_deadile(controlar_req), controlar_req);
                 ts.start();
 
             } else if (queue.size() < 2) {
@@ -178,19 +182,34 @@ public class Server_GUI extends javax.swing.JFrame {
 
         }
 
-    
-        
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
-    public int min_deadile(HashMap<Integer, HashMap> controlar_dealine){
-        int minValue = controlar_dealine.entrySet().stream().min(Map.Entry.comparingByValue()).get().getValue();
-        
-        return minValue;
+    public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
+
+        List<Map.Entry<Integer, DataHolder.Data>> list = new ArrayList<>(controlar_dealine.entrySet());
+        System.out.println("List -> " + list);
+        Collections.sort(list, Comparator.comparing(o -> o.getValue().value));
+
+        System.out.println("Menor -> " + list.stream().findFirst().get().getKey());
+        return list.stream().findFirst().get().getKey();
     }
-/**
- * @param args the command line arguments
- */
-public static void main(String args[]) {
+
+//    public void alguma_coisa() {
+//
+//        if (controlar_req.size() < 3 && queue.size() > 0) {
+//            count++;
+//            controlar_req.put(count, queue.get(0));
+//            queue.remove(0);
+//            System.out.println("Removido da queue e por na hash");
+//            ThreadServer ts = new ThreadServer(str, socketserver, id_servidor, count, controlar_req);
+//            ts.start();
+//
+//        }
+//    }
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
         Server_GUI exe = new Server_GUI();
         exe.setVisible(true);
         /* Set the Nimbus look and feel */
@@ -204,30 +223,20 @@ public static void main(String args[]) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
 
-}
+                }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Server_GUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
