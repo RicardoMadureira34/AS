@@ -36,9 +36,10 @@ public class ThreadServer extends Thread {
     Socket socketserver;
     int id_servidor;
     int min = 0;
-    String req;
+    //String req;
     HashMap<String, Integer> controlar_dealine = new HashMap<>();
     HashMap<Integer, DataHolder.Data> controlar_req = new HashMap<>();
+    HashMap<Integer, DataHolder.Data> req = new HashMap<>();
     HashMap<String, Integer> entry = new HashMap<>();
     ArrayList<String> exe_array = new ArrayList<>();
     ArrayList<Integer> exe_array2 = new ArrayList<>();
@@ -63,9 +64,9 @@ public class ThreadServer extends Thread {
         }
     }
 
-    public ThreadServer(String req, Socket socketserver, int id_servidor, int count, HashMap<Integer, DataHolder.Data> controlar_req) {
+    public ThreadServer(HashMap<Integer, DataHolder.Data> req, Socket socketserver, int id_servidor, int count, HashMap<Integer, DataHolder.Data> controlar_req) {
         this.socketserver = socketserver;
-        this.id_servidor = id_servidor;
+            this.id_servidor = id_servidor;
         this.req = req;
         this.count = count;
         this.controlar_req = controlar_req;
@@ -82,6 +83,10 @@ public class ThreadServer extends Thread {
 //                DataInputStream datareceber_fromload = new DataInputStream(receber_fromload);
 //                String requestfromload = datareceber_fromload.readUTF();
             //exe_array.add(requestfromload);
+            
+            //String[] process = req.values([1]);
+            
+            
             String[] process = req.split("[|]", 0);
 //                System.out.println("from load: " + requestfromload);
 //
