@@ -170,8 +170,12 @@ public class Server_GUI extends javax.swing.JFrame {
                 controlar_req.put(count, new DataHolder.Data(str, deadline));
                 System.out.println("inseriu na hash");
                 //print(controlar_req);
-                ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req));
-                ts.start();
+                if (controlar_req.size() > 1) {
+                    ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req));
+                    ts.start();
+                } else {
+                    System.out.println("Menor do que 2");
+                }
 
             } else if (queue.size() < 2) {
                 queue.add(str);
