@@ -11,30 +11,41 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.midi.Soundbank;
 
 /**
  *
  * @author omp
  */
 public class Server_GUI extends javax.swing.JFrame {
+
     int portserver = 0;
     Socket socketserver;
-    
+    HashMap<Integer, HashMap> controlar_req = new HashMap<>();
+    HashMap<String, Integer> req_deadline = new HashMap<>();
+    HashMap<Integer, Integer> controlar_dealine = new HashMap<>();
+    int count = 0;
+    String str_idServidor = new String();
+    ArrayList<String> queue = new ArrayList<>();
+    DataInputStream datareceber_fromload = null;
+    String str = new String();
+    int id_servidor = 0;
 
     /**
      * Creates new form Server_GUI
      */
     public Server_GUI() {
         initComponents();
-        
+
     }
-    
+
     public void Start_Server() {
 
-        
-        
     }
     
 
@@ -107,19 +118,19 @@ public class Server_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Start_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Start_ButtonActionPerformed
-        
-        try {                                             
+
+        try {
             // TODO add your handling code here:
-            
+
             portserver = Integer.parseInt(Port_server_swing.getText());
             OutputStream enviar_forload = null;
             InputStream receber_fromload = null;
-            int counter  = 0;
-            
+            int counter = 0;
+
             try {
                 socketserver = new Socket("127.0.0.1", portserver);
                 counter++;
-                
+
             } catch (IOException ex) {
             }
             enviar_forload = socketserver.getOutputStream();
@@ -129,27 +140,59 @@ public class Server_GUI extends javax.swing.JFrame {
             dataenviar_forload.flush();
             //----------
             receber_fromload = socketserver.getInputStream();
-            DataInputStream datareceber_fromload = new DataInputStream(receber_fromload);
-            String str_idServidor = datareceber_fromload.readUTF();
-            int id_servidor = Integer.parseInt(str_idServidor);
+            datareceber_fromload = new DataInputStream(receber_fromload);
+            str_idServidor = datareceber_fromload.readUTF();
+            
+            id_servidor = Integer.parseInt(str_idServidor);
             System.out.println("id servidor: " + id_servidor);
             
-            
-            ThreadServer ts = new ThreadServer(socketserver, id_servidor);
-            ts.start();
+            } catch (IOException ex) {
+            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        while (true) {
+            try {
+                str = datareceber_fromload.readUTF();
+                
             } catch (IOException ex) {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-        
-    }//GEN-LAST:event_Start_ButtonActionPerformed
+            if (controlar_req.size() < 5) {
+                String[] process = str.split("[|]", 0);
+                String str_processed = new String();
+                int deadline = Integer.parseInt(process[6]);
+                count++;
+                System.out.println("count: " + count);
+                controlar_req.put(count, (req_deadline.put(str, deadline)));
+                System.out.println("inseriu na hash");
+                ThreadServer ts = new ThreadServer(str, socketserver, id_servidor, min_deadile(controlar_req), controlar_req);
+                ts.start();
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        Server_GUI exe = new Server_GUI ();
-                exe.setVisible(true);
+            } else if (queue.size() < 2) {
+                queue.add(str);
+                System.out.println("inseriu na queue");
+
+            } else {
+                System.out.println("REJEITADO");
+            }
+
+        }
+
+    
+        
+
+    }//GEN-LAST:event_Start_ButtonActionPerformed
+    public int min_deadile(HashMap<Integer, HashMap> controlar_dealine){
+        int minValue = controlar_dealine.entrySet().stream().min(Map.Entry.comparingByValue()).get().getValue();
+        
+        return minValue;
+    }
+/**
+ * @param args the command line arguments
+ */
+public static void main(String args[]) {
+        Server_GUI exe = new Server_GUI();
+        exe.setVisible(true);
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -160,24 +203,38 @@ public class Server_GUI extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                }
+
+}
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Server_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Server_GUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Server_GUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
-               
+
             }
         });
     }

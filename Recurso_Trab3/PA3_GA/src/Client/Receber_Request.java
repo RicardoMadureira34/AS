@@ -40,7 +40,7 @@ public class Receber_Request extends Thread {
                 System.out.println("receber request final: " + receber_str);
                 
                 for(int i = 0; i < mostrar_array_final.size(); i++){
-                    System.out.println("array: " + mostrar_array_final.get(i));
+                    //System.out.println("array: " + mostrar_array_final.get(i));
                     mostrar_str_final.append("Request Final: ").append(mostrar_array_final.get(i)).append("\n");
                         
                     }

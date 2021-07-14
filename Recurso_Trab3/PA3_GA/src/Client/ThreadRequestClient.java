@@ -59,12 +59,7 @@ public class ThreadRequestClient extends Thread {
     
     public void run(){
         Socket socketConnection = connect;
-        
-                    
-                    
-                    //System.out.println("quantos request: ");
-                    //input = "";
-                    //scan = new Scanner(System.in);      
+    
                 
             try {
                 
