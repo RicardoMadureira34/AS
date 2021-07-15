@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Client.Receber_Request;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,11 +16,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.Soundbank;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -28,7 +32,9 @@ import javax.sound.midi.Soundbank;
 public class Server_GUI extends javax.swing.JFrame {
 
     int portserver = 0;
+    int portMonitor = 0;
     Socket socketserver;
+    Socket socketMonitor;
     //HashMap<Integer, HashMap> controlar_req = new HashMap<>();
     HashMap<Integer, DataHolder.Data> controlar_req = new HashMap<>();
     HashMap<String, Integer> req_deadline = new HashMap<>();
@@ -39,18 +45,19 @@ public class Server_GUI extends javax.swing.JFrame {
     DataInputStream datareceber_fromload = null;
     String str = new String();
     int id_servidor = 0;
+    StringBuilder mostrar_str_final = new StringBuilder();
+    ArrayList<String> mostrar_array_final = new ArrayList<>();
+    Set<String> set = new LinkedHashSet<>(mostrar_array_final);
 
     /**
      * Creates new form Server_GUI
      */
     public Server_GUI() {
         initComponents();
+        ONLINE_SWING.setVisible(false);
 
     }
 
-    public void Start_Server() {
-
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -61,16 +68,26 @@ public class Server_GUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTextField1 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         Port_server_swing = new javax.swing.JTextField();
         Start_Button = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        request_recebdos_swing = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        portmonitor_swing = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        req_exe_swing = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        req_pen_swing = new javax.swing.JTextArea();
+        ONLINE_SWING = new javax.swing.JLabel();
+
+        jTextField1.setText("jTextField1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SERVER");
 
-        jLabel2.setText("Port:");
+        jLabel2.setText("Port Server:");
 
         Port_server_swing.setText("11113");
 
@@ -81,7 +98,23 @@ public class Server_GUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Request(s) Recebidos");
+        jLabel1.setText("Request Recebidos");
+
+        jLabel3.setText("Port Monitor");
+
+        portmonitor_swing.setText("119");
+
+        jLabel4.setText("Request Executados");
+
+        req_exe_swing.setColumns(20);
+        req_exe_swing.setRows(5);
+        jScrollPane1.setViewportView(req_exe_swing);
+
+        req_pen_swing.setColumns(20);
+        req_pen_swing.setRows(5);
+        jScrollPane2.setViewportView(req_pen_swing);
+
+        ONLINE_SWING.setText("ONLINE");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -90,16 +123,27 @@ public class Server_GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(request_recebdos_swing)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(2, 2, 2)
-                                .addComponent(Port_server_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
-                        .addComponent(Start_Button)))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel2))
+                            .addGap(1, 1, 1)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(Port_server_swing, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                                .addComponent(portmonitor_swing))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(275, 275, 275)
+                                    .addComponent(Start_Button)
+                                    .addGap(0, 0, Short.MAX_VALUE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(233, 233, 233)
+                                    .addComponent(ONLINE_SWING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jLabel4))
+                    .addComponent(jScrollPane2))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -110,48 +154,81 @@ public class Server_GUI extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(Port_server_swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Start_Button))
-                .addGap(43, 43, 43)
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(portmonitor_swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ONLINE_SWING))
+                .addGap(49, 49, 49)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(request_recebdos_swing, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void Start_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Start_ButtonActionPerformed
+       
+        
+        // TODO add your handling code here:
+        ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
+        ONLINE_SWING.setVisible(true);
+        portserver = Integer.parseInt(Port_server_swing.getText());
+        portMonitor = Integer.parseInt(portmonitor_swing.getText());
+
+        OutputStream enviar_forload = null;
+        InputStream receber_fromload = null;
 
         try {
-            // TODO add your handling code here:
+            socketserver = new Socket("127.0.0.1", portserver);
 
-            portserver = Integer.parseInt(Port_server_swing.getText());
-            OutputStream enviar_forload = null;
-            InputStream receber_fromload = null;
-            int counter = 0;
+        } catch (IOException ex) {
+        }
 
-            try {
-                socketserver = new Socket("127.0.0.1", portserver);
-                counter++;
-
-            } catch (IOException ex) {
-            }
-            enviar_forload = socketserver.getOutputStream();
-            DataOutputStream dataenviar_forload = new DataOutputStream(enviar_forload);
-            String msg_forload = "servidor";
-            dataenviar_forload.writeUTF(msg_forload);
-            dataenviar_forload.flush();
-            //----------
-            receber_fromload = socketserver.getInputStream();
-            datareceber_fromload = new DataInputStream(receber_fromload);
-            str_idServidor = datareceber_fromload.readUTF();
-
-            id_servidor = Integer.parseInt(str_idServidor);
-            System.out.println("id servidor: " + id_servidor);
-
+        try {
+            socketMonitor = new Socket("127.0.0.1", portMonitor);
         } catch (IOException ex) {
             Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        try {
+            enviar_forload = socketserver.getOutputStream();
+        } catch (IOException ex) {
+            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        DataOutputStream dataenviar_forload = new DataOutputStream(enviar_forload);
+        String msg_forload = "servidor";
+        try {
+            dataenviar_forload.writeUTF(msg_forload);
+            dataenviar_forload.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            receber_fromload = socketserver.getInputStream();
+        } catch (IOException ex) {
+            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        datareceber_fromload = new DataInputStream(receber_fromload);
+        try {
+            str_idServidor = datareceber_fromload.readUTF();
+        } catch (IOException ex) {
+            Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        id_servidor = Integer.parseInt(str_idServidor);
+        System.out.println("id servidor: " + id_servidor);
+        
+        ConnectMonitor cm = new ConnectMonitor(socketMonitor, id_servidor);
+        cm.start();
+        
 
         while (true) {
             try {
@@ -160,8 +237,9 @@ public class Server_GUI extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
             //alguma_coisa();
-            if (controlar_req.size() < 3 && queue.size() == 0) {
+            if (controlar_req.size() < 6 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
                 String str_processed = new String();
                 int deadline = Integer.parseInt(process[6]);
@@ -171,7 +249,7 @@ public class Server_GUI extends javax.swing.JFrame {
                 System.out.println("inseriu na hash");
                 //print(controlar_req);
                 if (controlar_req.size() > 1) {
-                    ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req));
+                    ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req), req_exe_swing);
                     ts.start();
                 } else {
                     System.out.println("Menor do que 2");
@@ -184,13 +262,15 @@ public class Server_GUI extends javax.swing.JFrame {
             } else {
                 System.out.println("REJEITADO");
             }
-
+            
+            
         }
+        
+        
 
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
 
-    // Calcular o Request que tem o menor deadline
     public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
 
         List<Map.Entry<Integer, DataHolder.Data>> list = new ArrayList<>(controlar_dealine.entrySet());
@@ -219,6 +299,13 @@ public class Server_GUI extends javax.swing.JFrame {
 //
 //        }
 //    }
+    
+       
+        
+        
+        
+    
+
 
     /**
      * @param args the command line arguments
@@ -226,6 +313,8 @@ public class Server_GUI extends javax.swing.JFrame {
     public static void main(String args[]) {
         Server_GUI exe = new Server_GUI();
         exe.setVisible(true);
+        
+            
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -257,16 +346,25 @@ public class Server_GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                
 
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ONLINE_SWING;
     private javax.swing.JTextField Port_server_swing;
     private javax.swing.JButton Start_Button;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JTextField request_recebdos_swing;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField portmonitor_swing;
+    private javax.swing.JTextArea req_exe_swing;
+    private javax.swing.JTextArea req_pen_swing;
     // End of variables declaration//GEN-END:variables
 }

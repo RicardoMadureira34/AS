@@ -148,7 +148,8 @@ public void run(){
                 @Override
                 protected Boolean doInBackground() throws Exception {
 
-                String str_fromserver;
+                String str_fromserver = null;
+                String[] process_str = null;
                 
 
                 
@@ -157,23 +158,16 @@ public void run(){
                     try {
                         DataInputStream data_fromserver = new DataInputStream(s_forServer.getInputStream());
                         str_fromserver = data_fromserver.readUTF();
-                        
-                        String[] process_str = str_fromserver.split("[|]", -2);
+                        process_str = str_fromserver.split("[|]", -2);
+                         } catch (IOException ex) {
+  
+                        }
                         //enviar para cliente
                         OutputStream enviar_forclient = null;
                         enviar_forclient = all_clientessocket_conectados.get(parseInt(process_str[0])).getOutputStream();
                         DataOutputStream data_forclient = new DataOutputStream(enviar_forclient);
                         System.out.println("request vindo do servidor: " + str_fromserver);
                         data_forclient.writeUTF(str_fromserver);
-
-
-
-
-                        } catch (IOException ex) {
-  
-                        }
-
-
                     }
         
         

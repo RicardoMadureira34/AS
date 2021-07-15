@@ -33,6 +33,7 @@ public class Client_GUI extends javax.swing.JFrame {
     public Client_GUI() throws IOException {
         
         initComponents();
+        ONLINE_SWING.setVisible(false);
         
     }
     
@@ -62,6 +63,7 @@ public class Client_GUI extends javax.swing.JFrame {
         mostrar_req_pen_swing = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea1_receber_exe = new javax.swing.JTextArea();
+        ONLINE_SWING = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CLIENT");
@@ -121,6 +123,8 @@ public class Client_GUI extends javax.swing.JFrame {
         jTextArea1_receber_exe.setRows(5);
         jScrollPane3.setViewportView(jTextArea1_receber_exe);
 
+        ONLINE_SWING.setText("ONLINE");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -136,13 +140,14 @@ public class Client_GUI extends javax.swing.JFrame {
                                 .addComponent(numberport, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(StartButton))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ONLINE_SWING, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,7 +174,9 @@ public class Client_GUI extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(numberport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(StartButton)))
+                            .addComponent(StartButton))
+                        .addGap(34, 34, 34)
+                        .addComponent(ONLINE_SWING))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(75, 75, 75)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -197,6 +204,9 @@ public class Client_GUI extends javax.swing.JFrame {
 
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
         
+        ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
+        ONLINE_SWING.setText("ONLINE!");
+        ONLINE_SWING.setVisible(true);
         try {                                            
             port = Integer.parseInt(numberport.getText());
             
@@ -211,7 +221,7 @@ public class Client_GUI extends javax.swing.JFrame {
             infromClient2.writeUTF(ms);
             infromClient2.flush();
             ser = infromClient.readUTF(); //ID
-            Receber_Request receive = new Receber_Request(socketConnection, jTextArea1_receber_exe);
+            Receber_Request receive = new Receber_Request(ser, socketConnection, jTextArea1_receber_exe);
             receive.start();
             
             
@@ -285,6 +295,7 @@ public class Client_GUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ONLINE_SWING;
     private javax.swing.JButton StartButton;
     private javax.swing.JTextField deadline_swing;
     private javax.swing.JButton jButton1;

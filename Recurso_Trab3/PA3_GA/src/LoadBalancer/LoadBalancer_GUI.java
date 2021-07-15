@@ -24,11 +24,12 @@ import javax.swing.SwingWorker;
  * @author omp
  */
 public class LoadBalancer_GUI extends javax.swing.JFrame {
-    int port_forclient=0;
-    int port_formonitor=0;
-    int port_forserver=0;
+
+    int port_forclient = 0;
+    int port_formonitor = 0;
+    int port_forserver = 0;
     int id_client = 0;
-    
+
     ArrayList<String> list = new ArrayList<String>();
     HashMap<Integer, Socket> hash_clientes_connect = new HashMap<>();
     HashMap<Integer, Socket> allServerSocketsConnected = new HashMap<>();
@@ -36,24 +37,19 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
     HashMap<Integer, ArrayList> allRequestsOnEachServer = new HashMap<>();
     ServerSocket ss_forServer = null;
     Socket s_forServer = null;
-    
 
     /**
      * Creates new form LoadBalancer_GUI
      */
-    public LoadBalancer_GUI()  {
+    public LoadBalancer_GUI() {
         initComponents();
-        
-        
-        
-        
-        
-        
+        ONLINE_SWING.setVisible(false);
+
     }
-    public void Start_LoadBalancer(){
-        
+
+    public void Start_LoadBalancer() {
+
     }
-   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -71,6 +67,7 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
         port_monito = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         Port_Server_Swing = new javax.swing.JTextField();
+        ONLINE_SWING = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LOAD_BALANCER");
@@ -109,6 +106,9 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
             }
         });
 
+        ONLINE_SWING.setForeground(new java.awt.Color(0, 255, 0));
+        ONLINE_SWING.setText("ONLINE");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -116,6 +116,9 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -125,12 +128,12 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
                             .addComponent(port_monito, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(numberport, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
                             .addComponent(Port_Server_Swing))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
-                        .addComponent(StartButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(StartButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(ONLINE_SWING, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(29, 29, 29))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -147,7 +150,8 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(Port_Server_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Port_Server_Swing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ONLINE_SWING))
                 .addContainerGap(207, Short.MAX_VALUE))
         );
 
@@ -159,112 +163,143 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_numberportActionPerformed
 
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
-        
+
+        ONLINE_SWING.setVisible(true);
+        ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
+        ONLINE_SWING.setText("ONLINE!");
+
+        port_forclient = Integer.parseInt(numberport.getText());
+        port_formonitor = Integer.parseInt(port_monito.getText());
+        port_forserver = Integer.parseInt(Port_Server_Swing.getText());
+        ServerSocket ss_formonitor = null;
         try {
-            
-            port_forclient = Integer.parseInt(numberport.getText());
-            port_formonitor = Integer.parseInt(port_monito.getText());
-            port_forserver = Integer.parseInt(Port_Server_Swing.getText());
-            ServerSocket ss_formonitor=new ServerSocket(port_formonitor);
-            
-            ServerSocket ss_forclient = null;
-            InputStream inputfromclient = null;
-            OutputStream outforclient = null;
-            
-            
-            class Connect_servidor extends Thread {
-                
-                
-                
-                public Connect_servidor(){
-                }
-                
-                public void run(){
-                    InputStream inputfromservidor = null;
-                    OutputStream outforservidor = null;
-                    int id_servidor = 0;
-                    
-                    while(true){
-                        try {
-                            //ligacao load-servidor
-                            s_forServer = ss_forServer.accept();
-                            inputfromservidor = s_forServer.getInputStream();
-                            outforservidor = s_forServer.getOutputStream();
-                            DataInputStream data_inputfromservidor = new DataInputStream(inputfromservidor);
-                            DataOutputStream data_outforservidor = new DataOutputStream(outforservidor);
-                            String mensagem_servidor = data_inputfromservidor.readUTF();
-                            if("servidor".equals(mensagem_servidor)){
-                                System.out.println("enviar id para servidor " + id_servidor);
-                                data_outforservidor.writeUTF(String.valueOf(id_servidor));
-                                allServerSocketsConnected.put(id_servidor, s_forServer);
-                                allRequestsOnEachServer.put(id_servidor, new ArrayList<String>());
-                                id_servidor++;
-                            }
-                            
-                        } catch (IOException ex) {
-                            
-                        }
-                    }
-                    
-                    
-                    
-                }
-                
-            }
-            
-            
-            
-            
-            
-            
-            try {
-                
-                int counter = 0;
-                
-                Socket s_formonitor=ss_formonitor.accept();
-                ss_forServer=new ServerSocket(port_forserver);
-                ss_forclient=new ServerSocket(port_forclient);
-                Connect_servidor connect_server = new Connect_servidor();
-                connect_server.start();
-                while(true){
-                    try {
-                        //ligacao cliente-load
-                        Socket s_forclient=ss_forclient.accept();
-                        inputfromclient = s_forclient.getInputStream();
-                        outforclient = s_forclient.getOutputStream();
-                        DataInputStream data_inputfromclient = new DataInputStream(inputfromclient);
-                        DataOutputStream data_outforclient = new DataOutputStream(outforclient);
-                        String mensagem_client = data_inputfromclient.readUTF();
-                        if("cliente".equals(mensagem_client)){
-                            System.out.println("enviar id para client " + id_client);
-                            data_outforclient.writeUTF(String.valueOf(id_client));
-                            all_clientessocket_conectados.put(id_client, s_forclient);
-                            id_client++;
-                        }
-                        
-                        ThreadLoadBalancer t= new ThreadLoadBalancer(s_forclient,s_formonitor, s_forServer, all_clientessocket_conectados, allServerSocketsConnected, allRequestsOnEachServer);
-                        t.start();
-                        
-                        
-                    } catch (IOException ex) {
-                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    } 
-                    
-                    
-                }   } catch (IOException ex) {
-                    Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            
-            
-            
+            ss_formonitor = new ServerSocket(port_formonitor);
         } catch (IOException ex) {
             Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-    
+
+        ServerSocket ss_forclient = null;
+        InputStream inputfromclient = null;
+        OutputStream outforclient = null;
+
+        class Connect_servidor extends Thread {
+
+            public Connect_servidor() {
+
+            }
+
+            public void run() {
+                InputStream inputfromservidor = null;
+                OutputStream outforservidor = null;
+                int id_servidor = 0;
+
+                while (true) {
+
+                    try {
+                        //ligacao load-servidor
+                        s_forServer = ss_forServer.accept();
+                    } catch (IOException ex) {
+                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        inputfromservidor = s_forServer.getInputStream();
+                    } catch (IOException ex) {
+                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        outforservidor = s_forServer.getOutputStream();
+                    } catch (IOException ex) {
+                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    DataInputStream data_inputfromservidor = new DataInputStream(inputfromservidor);
+                    DataOutputStream data_outforservidor = new DataOutputStream(outforservidor);
+                    String mensagem_servidor = new String();
+                    try {
+                        mensagem_servidor = data_inputfromservidor.readUTF();
+                    } catch (IOException ex) {
+                        Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if ("servidor".equals(mensagem_servidor)) {
+                        System.out.println("enviar id para servidor " + id_servidor);
+                        try {
+                            data_outforservidor.writeUTF(String.valueOf(id_servidor));
+                        } catch (IOException ex) {
+                            Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        allServerSocketsConnected.put(id_servidor, s_forServer);
+                        allRequestsOnEachServer.put(id_servidor, new ArrayList<String>());
+                        id_servidor++;
+                    }
+
+                }
+
+            }
+
+        }
+
+        int counter = 0;
+
+        Socket s_formonitor = null;
+        try {
+            s_formonitor = ss_formonitor.accept();
+        } catch (IOException ex) {
+            Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            ss_forServer = new ServerSocket(port_forserver);
+        } catch (IOException ex) {
+            Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            ss_forclient = new ServerSocket(port_forclient);
+        } catch (IOException ex) {
+            Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Connect_servidor connect_server = new Connect_servidor();
+        connect_server.start();
+        while (true) {
+
+            //ligacao cliente-load
+            Socket s_forclient = null;
+            try {
+                s_forclient = ss_forclient.accept();
+            } catch (IOException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                inputfromclient = s_forclient.getInputStream();
+            } catch (IOException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                outforclient = s_forclient.getOutputStream();
+            } catch (IOException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            DataInputStream data_inputfromclient = new DataInputStream(inputfromclient);
+            DataOutputStream data_outforclient = new DataOutputStream(outforclient);
+            String mensagem_client = new String();
+            try {
+                mensagem_client = data_inputfromclient.readUTF();
+            } catch (IOException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if ("cliente".equals(mensagem_client)) {
+                System.out.println("enviar id para client " + id_client);
+                try {
+                    data_outforclient.writeUTF(String.valueOf(id_client));
+                } catch (IOException ex) {
+                    Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                all_clientessocket_conectados.put(id_client, s_forclient);
+                id_client++;
+            }
+
+            ThreadLoadBalancer t = new ThreadLoadBalancer(s_forclient, s_formonitor, s_forServer, all_clientessocket_conectados, allServerSocketsConnected, allRequestsOnEachServer);
+            t.start();
+        }
     }//GEN-LAST:event_StartButtonActionPerformed
-    
+
     private void port_monitoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_port_monitoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_port_monitoActionPerformed
@@ -278,9 +313,8 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
      */
     public static void main(String args[]) throws IOException, InterruptedException {
         LoadBalancer_GUI exe = new LoadBalancer_GUI();
-                    exe.setVisible(true);
-        
-                        
+        exe.setVisible(true);
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -307,13 +341,13 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-             
-               
+
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ONLINE_SWING;
     private javax.swing.JTextField Port_Server_Swing;
     private javax.swing.JButton StartButton;
     private javax.swing.JLabel jLabel2;

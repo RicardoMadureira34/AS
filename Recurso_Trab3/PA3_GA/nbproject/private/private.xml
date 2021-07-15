@@ -3,9 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/tsuru/Documents/GitHub/AS/Recurso_Trab3/PA3_GA/src/Server/ThreadServer.java</file>
-            <file>file:/C:/Users/tsuru/Documents/GitHub/AS/Recurso_Trab3/PA3_GA/src/Server/DataHolder.java</file>
-            <file>file:/C:/Users/tsuru/Documents/GitHub/AS/Recurso_Trab3/PA3_GA/src/Server/Server_GUI.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Server/ThreadServer.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/LoadBalancer/Connect_servidor.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/LoadBalancer/ThreadLoadBalancer.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Client/Client_GUI.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Monitor/ThreadMonitor.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Server/Thread_swing.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/LoadBalancer/LoadBalancer_GUI.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Server/ConnectMonitor.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Server/Server_GUI.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/Monitor/Monitor_GUI.java</file>
+            <file>file:/home/ricardo/Desktop/Aveiro/as/trab3/git_trab3/AS/Recurso_Trab3/PA3_GA/src/LoadBalancer/Enviar_paraServidor.java</file>
         </group>
     </open-files>
 </project-private>
