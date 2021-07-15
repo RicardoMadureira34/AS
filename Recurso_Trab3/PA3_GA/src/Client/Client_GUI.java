@@ -19,25 +19,24 @@ import java.util.logging.Logger;
  * @author omp
  */
 public class Client_GUI extends javax.swing.JFrame {
+
     Socket socketConnection;
     int port = 0;
     int deadline = 0;
     HashMap<Integer, String> Requests_pendentes = new HashMap<>();
-     DataInputStream infromClient;
+    DataInputStream infromClient;
     DataOutputStream infromClient2;
-    String ser=new String();
+    String ser = new String();
 
     /**
      * Creates new form GUI_Client
      */
     public Client_GUI() throws IOException {
-        
+
         initComponents();
         ONLINE_SWING.setVisible(false);
-        
-    }
-    
 
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -203,13 +202,13 @@ public class Client_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
-        
+
         ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
         ONLINE_SWING.setText("ONLINE!");
         ONLINE_SWING.setVisible(true);
-        try {                                            
+        try {
             port = Integer.parseInt(numberport.getText());
-            
+
             try {
                 socketConnection = new Socket("127.0.0.1", port);
                 infromClient = new DataInputStream(socketConnection.getInputStream());
@@ -223,13 +222,12 @@ public class Client_GUI extends javax.swing.JFrame {
             ser = infromClient.readUTF(); //ID
             Receber_Request receive = new Receber_Request(ser, socketConnection, jTextArea1_receber_exe);
             receive.start();
-            
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Client_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
-       
+
+
     }//GEN-LAST:event_StartButtonActionPerformed
 
     private void numberportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberportActionPerformed
@@ -240,7 +238,7 @@ public class Client_GUI extends javax.swing.JFrame {
         // TODO add your handling code here: 
         int request_id = 0;
         deadline = Integer.parseInt(deadline_swing.getText());
-        
+
         ThreadRequestClient req = new ThreadRequestClient(ser, deadline, socketConnection, request_id, Requests_pendentes, mostrar_req_pen_swing, ni_Swing);
         req.start();
         request_id++;
@@ -259,9 +257,9 @@ public class Client_GUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) throws IOException {
-        Client_GUI exe = new Client_GUI ();
-                exe.setVisible(true);
-                
+        Client_GUI exe = new Client_GUI();
+        exe.setVisible(true);
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -289,7 +287,7 @@ public class Client_GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-             
+
             }
         });
     }

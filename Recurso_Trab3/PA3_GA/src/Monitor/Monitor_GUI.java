@@ -5,7 +5,6 @@
  */
 package Monitor;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,12 +26,12 @@ import javax.swing.JTextArea;
  * @author omp
  */
 public class Monitor_GUI extends javax.swing.JFrame {
+
     int portfromLoadBalancer = 0;
     int portforServer = 0;
     Socket socketfromload;
     Socket socketforserver;
     ServerSocket serverforServer;
-    
 
     /**
      * Creates new form Monitor_GUI
@@ -40,7 +39,7 @@ public class Monitor_GUI extends javax.swing.JFrame {
     public Monitor_GUI() {
         initComponents();
         ONLINE_SWING.setVisible(false);
-        
+
     }
 
     /**
@@ -187,14 +186,16 @@ public class Monitor_GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Monitor_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         class Connect_servidor extends Thread {
+
             String mensagem_servidor = new String();
             StringBuilder mostrar_str_final = new StringBuilder();
             ArrayList<String> mostrar_array_final = new ArrayList<>();
             Set<String> set = new LinkedHashSet<>(mostrar_array_final);
-                
-            public Connect_servidor() { }
+
+            public Connect_servidor() {
+            }
 
             public void run() {
                 InputStream inputfromservidor = null;
@@ -202,7 +203,7 @@ public class Monitor_GUI extends javax.swing.JFrame {
                 int id_monitor = 0;
 
                 while (true) {
-           
+
                     try {
                         //ligacao load-servidor
                         socketforserver = serverforServer.accept();
@@ -219,9 +220,9 @@ public class Monitor_GUI extends javax.swing.JFrame {
                     } catch (IOException ex) {
                         Logger.getLogger(Monitor_GUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                        DataInputStream data_inputfromservidor = new DataInputStream(inputfromservidor);
-                        DataOutputStream data_outfrorservidor = new DataOutputStream(outforservidor);
-                        
+                    DataInputStream data_inputfromservidor = new DataInputStream(inputfromservidor);
+                    DataOutputStream data_outfrorservidor = new DataOutputStream(outforservidor);
+
                     try {
                         mensagem_servidor = data_inputfromservidor.readUTF();
                     } catch (IOException ex) {
@@ -231,14 +232,12 @@ public class Monitor_GUI extends javax.swing.JFrame {
                     mostrar_array_final.clear();
                     mostrar_array_final.addAll(set);
                     mostrar_array_final.add(mensagem_servidor);
-                    for(int i = 0; i < mostrar_array_final.size(); i++){
+                    for (int i = 0; i < mostrar_array_final.size(); i++) {
                         System.out.println("exe_server: " + mostrar_array_final.get(i));
-                        mostrar_str_final.append("ID Servidor Online-").append(mostrar_array_final.get(i)).append("\n");         
+                        mostrar_str_final.append("ID Servidor Online-").append(mostrar_array_final.get(i)).append("\n");
                     }
                     server_online_swing.setText(mostrar_str_final.toString());
-                        
 
-                   
                 }
 
             }
@@ -248,8 +247,7 @@ public class Monitor_GUI extends javax.swing.JFrame {
         connect_server.start();
         ThreadMonitor tm = new ThreadMonitor(socketfromload, req_pen);
         tm.start();
-        
-        
+
 
     }//GEN-LAST:event_StartButtonActionPerformed
 
@@ -265,9 +263,9 @@ public class Monitor_GUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Monitor_GUI exe = new Monitor_GUI ();
-                exe.setVisible(true);
-                //exe.Start_Monitor();
+        Monitor_GUI exe = new Monitor_GUI();
+        exe.setVisible(true);
+        //exe.Start_Monitor();
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -294,7 +292,7 @@ public class Monitor_GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
+
             }
         });
     }

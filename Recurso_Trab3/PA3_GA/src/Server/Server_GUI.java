@@ -58,7 +58,6 @@ public class Server_GUI extends javax.swing.JFrame {
 
     }
 
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -174,8 +173,7 @@ public class Server_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Start_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Start_ButtonActionPerformed
-       
-        
+
         // TODO add your handling code here:
         ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
         ONLINE_SWING.setVisible(true);
@@ -225,10 +223,28 @@ public class Server_GUI extends javax.swing.JFrame {
 
         id_servidor = Integer.parseInt(str_idServidor);
         System.out.println("id servidor: " + id_servidor);
-        
-        ConnectMonitor cm = new ConnectMonitor(socketMonitor, id_servidor);
-        cm.start();
-        
+
+        SwingWorker ConnectMonitor = new SwingWorker<Boolean, Integer>() {
+            OutputStream enviar_forMonitor = null;
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    enviar_forMonitor = socketMonitor.getOutputStream();
+                } catch (IOException ex) {
+
+                }
+                DataOutputStream dataenviar_forMonitor = new DataOutputStream(enviar_forMonitor);
+                try {
+                    dataenviar_forMonitor.writeUTF(String.valueOf(id_servidor));
+                    dataenviar_forMonitor.flush();
+                } catch (IOException ex) {
+
+                }
+                return null;
+            }
+        };
+        ConnectMonitor.execute();
 
         while (true) {
             try {
@@ -237,7 +253,7 @@ public class Server_GUI extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             //alguma_coisa();
             if (controlar_req.size() < 6 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
@@ -251,6 +267,7 @@ public class Server_GUI extends javax.swing.JFrame {
                 if (controlar_req.size() > 1) {
                     ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req), req_exe_swing);
                     ts.start();
+
                 } else {
                     System.out.println("Menor do que 2");
                 }
@@ -262,11 +279,8 @@ public class Server_GUI extends javax.swing.JFrame {
             } else {
                 System.out.println("REJEITADO");
             }
-            
-            
+
         }
-        
-        
 
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
@@ -299,13 +313,6 @@ public class Server_GUI extends javax.swing.JFrame {
 //
 //        }
 //    }
-    
-       
-        
-        
-        
-    
-
 
     /**
      * @param args the command line arguments
@@ -313,8 +320,7 @@ public class Server_GUI extends javax.swing.JFrame {
     public static void main(String args[]) {
         Server_GUI exe = new Server_GUI();
         exe.setVisible(true);
-        
-            
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -346,7 +352,6 @@ public class Server_GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
 
             }
         });

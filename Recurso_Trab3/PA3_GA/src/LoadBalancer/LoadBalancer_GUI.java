@@ -297,6 +297,18 @@ public class LoadBalancer_GUI extends javax.swing.JFrame {
 
             ThreadLoadBalancer t = new ThreadLoadBalancer(s_forclient, s_formonitor, s_forServer, all_clientessocket_conectados, allServerSocketsConnected, allRequestsOnEachServer);
             t.start();
+
+            try {
+                connect_server.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                t.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoadBalancer_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }//GEN-LAST:event_StartButtonActionPerformed
 

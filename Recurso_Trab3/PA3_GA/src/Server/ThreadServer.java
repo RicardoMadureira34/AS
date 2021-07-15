@@ -70,13 +70,12 @@ public class ThreadServer extends Thread {
     public void run() {
 
         try {
-            req_EXECUTADOS.setText("skhfakjdskajdhajsh");
+            req_EXECUTADOS.append("skhfakjdskajdhajsh");
             System.out.println("Print1 -> ");
             print(controlar_req);
 
             String[] process = controlar_req.get(count2).key.split("[|]", 0);
             System.out.println("Process -> " + Arrays.toString(process));
- 
 
             String str_processed = new String();
             int deadline = Integer.parseInt(process[6]);
@@ -93,7 +92,6 @@ public class ThreadServer extends Thread {
                     .append("02").append("|").append(process[4]).append("|").append(str_processed).append("|").append(deadline)
                     .append("|");
             System.out.println("process: " + processed.toString());
-            
 
             try {
                 sleep(5000 * niter);
@@ -110,8 +108,6 @@ public class ThreadServer extends Thread {
             controlar_req.remove(count2);
             System.out.println("Print2 ->");
             print(controlar_req);
-            
-            
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

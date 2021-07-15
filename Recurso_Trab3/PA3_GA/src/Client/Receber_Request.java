@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
  * @author root
  */
 public class Receber_Request extends Thread {
+
     Socket receive;
     String id;
     JTextArea mostrarrequest_final;
@@ -32,19 +33,19 @@ public class Receber_Request extends Thread {
     HashMap<String, String> swing = new HashMap<>();
     DataInputStream data_fromserver = null;
     Set<String> set = new LinkedHashSet<>(mostrar_array_final);
-    
-    public Receber_Request(String id, Socket receive, JTextArea mostrarrequest_final){
-        this.receive = receive; 
+
+    public Receber_Request(String id, Socket receive, JTextArea mostrarrequest_final) {
+        this.receive = receive;
         this.mostrarrequest_final = mostrarrequest_final;
         this.id = id;
-        
+
     }
-    
-    public void run (){
-        while (true){
+
+    public void run() {
+        while (true) {
             try {
                 data_fromserver = new DataInputStream(receive.getInputStream());
-           
+
             } catch (IOException ex) {
                 Logger.getLogger(Receber_Request.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -54,19 +55,17 @@ public class Receber_Request extends Thread {
                 Logger.getLogger(Receber_Request.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("receber request final: " + receber_str);
-            
+
             mostrar_array_final.clear();
             mostrar_array_final.addAll(set);
             mostrar_array_final.add(receber_str);
-            for(int i = 0; i < mostrar_array_final.size(); i++){
+            for (int i = 0; i < mostrar_array_final.size(); i++) {
                 System.out.println("exe: " + mostrar_array_final.get(i));
-                mostrar_str_final.append("Request-").append(mostrar_array_final.get(i)).append("\n");         
+                mostrar_str_final.append("Request-").append(mostrar_array_final.get(i)).append("\n");
             }
             mostrarrequest_final.setText(mostrar_str_final.toString());
-            
-            
-            
+
         }
-        
+
     }
 }
