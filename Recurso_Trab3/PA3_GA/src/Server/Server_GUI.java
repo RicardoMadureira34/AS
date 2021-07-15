@@ -161,7 +161,7 @@ public class Server_GUI extends javax.swing.JFrame {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             //alguma_coisa();
-            if (controlar_req.size() < 6 && queue.size() == 0) {
+            if (controlar_req.size() < 3 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
                 String str_processed = new String();
                 int deadline = Integer.parseInt(process[6]);
@@ -190,6 +190,7 @@ public class Server_GUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
 
+    // Calcular o Request que tem o menor deadline
     public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
 
         List<Map.Entry<Integer, DataHolder.Data>> list = new ArrayList<>(controlar_dealine.entrySet());
