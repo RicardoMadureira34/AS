@@ -24,6 +24,7 @@ public class Client_GUI extends javax.swing.JFrame {
     int port = 0;
     int deadline = 0;
     HashMap<Integer, String> Requests_pendentes = new HashMap<>();
+    HashMap<Integer, String> executados;
     DataInputStream infromClient;
     DataOutputStream infromClient2;
     String ser = new String();
@@ -202,7 +203,7 @@ public class Client_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
-
+        
         ONLINE_SWING.setForeground(new java.awt.Color(0, 100, 0));
         ONLINE_SWING.setText("ONLINE!");
         ONLINE_SWING.setVisible(true);

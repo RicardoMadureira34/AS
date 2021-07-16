@@ -214,7 +214,6 @@ public class Server_GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
         datareceber_fromload = new DataInputStream(receber_fromload);
         try {
@@ -239,6 +238,7 @@ public class Server_GUI extends javax.swing.JFrame {
                 DataOutputStream dataenviar_forMonitor = new DataOutputStream(enviar_forMonitor);
                 try {
                     dataenviar_forMonitor.writeUTF(String.valueOf(id_servidor));
+
                     dataenviar_forMonitor.flush();
                 } catch (IOException ex) {
 
@@ -251,6 +251,7 @@ public class Server_GUI extends javax.swing.JFrame {
         while (true) {
             try {
                 str = datareceber_fromload.readUTF();
+                req_pen_swing.setText("Request: " + str);
 
             } catch (IOException ex) {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -280,8 +281,8 @@ public class Server_GUI extends javax.swing.JFrame {
 
             } else {
                 String[] str_reject = str.split("[|]", 0);
-                String rejeitar_request = str_reject[0] + "|" + str_reject[1] + "|" + String.valueOf(0) + id_servidor + "|" + String.valueOf(0) + String.valueOf(3) + "|" + str_reject[4] + "|" + str_reject[5] + "|" +
-                        str_reject[6] + "|";
+                String rejeitar_request = str_reject[0] + "|" + str_reject[1] + "|" + String.valueOf(0) + id_servidor + "|" + String.valueOf(0) + String.valueOf(3) + "|" + str_reject[4] + "|" + str_reject[5] + "|"
+                        + str_reject[6] + "|";
                 try {
                     dataenviar_forload.writeUTF(rejeitar_request);
                 } catch (IOException ex) {
@@ -293,12 +294,16 @@ public class Server_GUI extends javax.swing.JFrame {
                     Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 System.out.println("REJEITADO: " + rejeitar_request);
+
             }
+            
 
         }
 
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
+
+   
 
     public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
 

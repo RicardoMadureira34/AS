@@ -98,6 +98,14 @@ public class ThreadServer extends Thread {
             } catch (InterruptedException ex) {
                 java.util.logging.Logger.getLogger(ThreadServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+            mostrar_array_final.clear();
+            mostrar_array_final.addAll(set);
+            mostrar_array_final.add(processed.toString());
+            for (int i = 0; i < mostrar_array_final.size(); i++) {
+                System.out.println("exe: " + mostrar_array_final.get(i));
+                mostrar_str_final.append("Request-").append(mostrar_array_final.get(i)).append("\n");
+            }
+            req_EXECUTADOS.setText(mostrar_str_final.toString());
 
             DataOutputStream data_enviarforclient = new DataOutputStream(socketserver.getOutputStream());
             data_enviarforclient.writeUTF(processed.toString());
