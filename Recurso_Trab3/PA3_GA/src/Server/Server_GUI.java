@@ -35,13 +35,14 @@ public class Server_GUI extends javax.swing.JFrame {
     int portMonitor = 0;
     Socket socketserver;
     Socket socketMonitor;
-    //HashMap<Integer, HashMap> controlar_req = new HashMap<>();
     HashMap<Integer, DataHolder.Data> controlar_req = new HashMap<>();
+    //DataHolder.Data queue;
+    //HashMap<Integer, DataHolder.Data> queue = new HashMap<>();
     HashMap<String, Integer> req_deadline = new HashMap<>();
     HashMap<Integer, Integer> controlar_dealine = new HashMap<>();
     int count = 0;
     String str_idServidor = new String();
-    ArrayList<String> queue = new ArrayList<>();
+    ArrayList<DataHolder.Data> queue = new ArrayList<>();
     DataInputStream datareceber_fromload = null;
     String str = new String();
     int id_servidor = 0;
@@ -247,6 +248,8 @@ public class Server_GUI extends javax.swing.JFrame {
             }
         };
         ConnectMonitor.execute();
+        
+        
 
         while (true) {
             try {
@@ -257,11 +260,12 @@ public class Server_GUI extends javax.swing.JFrame {
                 Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            //alguma_coisa();
+            alguma_coisa();
+            String[] process = str.split("[|]", 0);
+            String str_processed = new String();
+            int deadline = Integer.parseInt(process[6]);
+
             if (controlar_req.size() < 3 && queue.size() == 0) {
-                String[] process = str.split("[|]", 0);
-                String str_processed = new String();
-                int deadline = Integer.parseInt(process[6]);
                 count++;
                 System.out.println("Count -> " + count);
                 controlar_req.put(count, new DataHolder.Data(str, deadline));
@@ -276,9 +280,8 @@ public class Server_GUI extends javax.swing.JFrame {
                 }
 
             } else if (queue.size() < 2) {
-                queue.add(str);
+                queue.add(new DataHolder.Data(str, deadline));
                 System.out.println("inseriu na queue");
-
             } else {
                 String[] str_reject = str.split("[|]", 0);
                 String rejeitar_request = str_reject[0] + "|" + str_reject[1] + "|" + String.valueOf(0) + id_servidor + "|" + String.valueOf(0) + String.valueOf(3) + "|" + str_reject[4] + "|" + str_reject[5] + "|"
@@ -296,14 +299,20 @@ public class Server_GUI extends javax.swing.JFrame {
                 System.out.println("REJEITADO: " + rejeitar_request);
 
             }
-            
-
+//            while (queue.size() > 0) {
+//                if (controlar_req.size() < 3) {
+//                    count++;
+//                    controlar_req.put(count, queue.get(0));
+//                    queue.remove(0);
+//                    System.out.println("Removido da queue e por na hash");
+//                    ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req), req_exe_swing);
+//                    ts.start();
+//                }
+//            }
         }
 
 
     }//GEN-LAST:event_Start_ButtonActionPerformed
-
-   
 
     public int min_deadile(HashMap<Integer, DataHolder.Data> controlar_dealine) {
 
@@ -320,19 +329,18 @@ public class Server_GUI extends javax.swing.JFrame {
             System.out.println(entry.getKey() + " " + entry.getValue());
         });
     }
-//
-//    public void alguma_coisa() {
-//
-//        if (controlar_req.size() < 3 && queue.size() > 0) {
-//            count++;
-//            controlar_req.put(count, queue.get(0));
-//            queue.remove(0);
-//            System.out.println("Removido da queue e por na hash");
-//            ThreadServer ts = new ThreadServer(str, socketserver, id_servidor, count, controlar_req);
-//            ts.start();
-//
-//        }
-//    }
+
+    public void alguma_coisa() {
+        if (controlar_req.size() < 3 && queue.size() > 0) {
+            count++;
+            controlar_req.put(count, queue.get(0));
+            queue.remove(0);
+            System.out.println("Removido da queue e por na hash");
+            ThreadServer ts = new ThreadServer(controlar_req, socketserver, id_servidor, min_deadile(controlar_req), req_exe_swing);
+            ts.start();
+
+        }
+    }
 
     /**
      * @param args the command line arguments
