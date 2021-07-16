@@ -214,6 +214,8 @@ public class Server_GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+
         datareceber_fromload = new DataInputStream(receber_fromload);
         try {
             str_idServidor = datareceber_fromload.readUTF();
@@ -255,7 +257,7 @@ public class Server_GUI extends javax.swing.JFrame {
             }
 
             //alguma_coisa();
-            if (controlar_req.size() < 6 && queue.size() == 0) {
+            if (controlar_req.size() < 3 && queue.size() == 0) {
                 String[] process = str.split("[|]", 0);
                 String str_processed = new String();
                 int deadline = Integer.parseInt(process[6]);
@@ -277,7 +279,20 @@ public class Server_GUI extends javax.swing.JFrame {
                 System.out.println("inseriu na queue");
 
             } else {
-                System.out.println("REJEITADO");
+                String[] str_reject = str.split("[|]", 0);
+                String rejeitar_request = str_reject[0] + "|" + str_reject[1] + "|" + String.valueOf(0) + id_servidor + "|" + String.valueOf(0) + String.valueOf(3) + "|" + str_reject[4] + "|" + str_reject[5] + "|" +
+                        str_reject[6] + "|";
+                try {
+                    dataenviar_forload.writeUTF(rejeitar_request);
+                } catch (IOException ex) {
+                    Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    dataenviar_forload.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(Server_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println("REJEITADO: " + rejeitar_request);
             }
 
         }
